@@ -36,6 +36,4 @@ yarn-error.log*
 Thumbs.db
 *.tmp
 
-# Custom project files
-frontend/src/components/ChatLogoutLoader.jsx
-frontend/src/lib/useStreamChat.js
+
