@@ -13,6 +13,7 @@ import { capitialize } from "../lib/utils";
 
 import FriendCard, { getLanguageFlag } from "../components/FriendCard";
 import NoFriendsFound from "../components/NoFriendsFound";
+import toast from "react-hot-toast";
 
 const HomePage = () => {
   const queryClient = useQueryClient();
@@ -33,14 +34,22 @@ const HomePage = () => {
     queryFn: getOutgoingFriendReqs,
   });
 
-  const { mutate: sendRequestMutation, isPending } = useMutation({
+  const { mutate: sendRequestMutation, isPending, error: sendRequestMutationError } = useMutation({
     mutationFn: sendFriendRequest,
+    onError: (err) => {
+      console.log(err.response?.data?.message)
+      toast.error(err.response?.data?.message ?? "Some Error Occured")
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["outgoingFriendReqs"] }),
   });
 
   useEffect(() => {
     const outgoingIds = new Set();
+    console.log("outgoingFriendReqs: ", outgoingFriendReqs?.outgoingReqs)
+    console.log("outgoingFriendReqs.length: ", outgoingFriendReqs?.length)
     if (outgoingFriendReqs && outgoingFriendReqs.length > 0) {
+      console.log("Inside")
+
       outgoingFriendReqs.forEach((req) => {
         outgoingIds.add(req.recipient._id);
       });
@@ -100,6 +109,9 @@ const HomePage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {recommendedUsers.map((user) => {
                 const hasRequestBeenSent = outgoingRequestsIds.has(user._id);
+                // console.log("hasRequestBeenSent: ", hasRequestBeenSent)
+                // console.log("user._id: ", user._id)
+                // console.log("outgoingRequestsIds: ", outgoingRequestsIds)
 
                 return (
                   <div

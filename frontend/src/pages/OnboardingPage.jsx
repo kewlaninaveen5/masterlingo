@@ -12,7 +12,7 @@ const OnboardingPage = () => {
 
   const [formState, setFormState] = useState({
     fullName: authUser?.fullName || "",
-    bio: authUser?.bio || "",
+    bio: authUser?.bio || "Hey! I am using Masterlingo!",
     nativeLanguage: authUser?.nativeLanguage || "",
     learningLanguage: authUser?.learningLanguage || "",
     location: authUser?.location || "",
@@ -27,7 +27,7 @@ const OnboardingPage = () => {
     },
 
     onError: (error) => {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data.message);
     },
   });
 

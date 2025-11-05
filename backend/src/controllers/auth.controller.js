@@ -47,21 +47,25 @@ export const signup = async (req, res, next) => {
     if (!emailRegex.test(email)) {
       return res.status(400).json({ message: "Invalid email format" });
     }
+    console.log("email and password passed validation, checking existing user")
 
     const existingUser = await User.findOne({ email });
     if (existingUser)
       return res.status(400).json({
         message: "Email already exists. Please use a different email",
       });
+    console.log("No existing user")
     const lowerCaseEmail = email.toLowerCase()
     const idx = Math.floor(Math.random() * 100) + 1; // generate number b/w 1 and 100
     const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
+    console.log("Creating new user", lowerCaseEmail)
     const newUser = await User.create({
-      lowerCaseEmail,
+      email: lowerCaseEmail,
       fullName,
       password,
       profilePic: randomAvatar,
     });
+    console.log("Created new user")
 
     try {
       console.log("Stream User ID: ", newUser._id.toString());
