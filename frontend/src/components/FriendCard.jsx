@@ -1,7 +1,47 @@
 import { Link } from "react-router";
 import { LANGUAGE_TO_FLAG } from "../constants";
+import toast from "react-hot-toast";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createVideoCall } from "../lib/api";
+import { useDispatch, useSelector } from "react-redux";
+import useSocket from "../hooks/useSocket";
+import useAuthUser from "../hooks/useAuthUser";
+import { inCallToTrue } from "../redux/socketIO/socketSlice";
 
 const FriendCard = ({ friend }) => {
+  const { authUser } = useAuthUser();
+  const { initiateCall } = useSocket();
+  const socketState = useSelector((state) => state.socketFromStore);
+  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
+  const {
+    mutate: createVideoCallData,
+    isPending,
+    error,
+  } = useMutation({
+    mutationFn: createVideoCall,
+    onSuccess: (data) => {
+      console.log("video call created: ", data);
+      initiateCall({
+        callId: data.webURL,
+        to: friend._id,
+        from: authUser._id, // your current logged-in user
+        type: "one_to_one",
+      });
+    },
+    onError: (error) => console.log("failed because: ", error),
+  });
+
+  const initiateVideoCallHandler = async () => {
+    toast(`Calling ${friend.fullName} `);
+    console.log("socketState: ", socketState);
+    
+
+    createVideoCallData({
+      callToUser: friend._id,
+      type: "one_to_one",
+    });
+  };
   return (
     <div className="card bg-base-200 hover:shadow-md transition-shadow">
       <div className="card-body p-4">
@@ -27,6 +67,12 @@ const FriendCard = ({ friend }) => {
         <Link to={`/chat/${friend._id}`} className="btn btn-outline w-full">
           Message
         </Link>
+        <button
+          onClick={initiateVideoCallHandler}
+          className={`btn btn-outline w-full ${socketState.inCall ? 'btn-disabled' : ''}`}
+        >
+          Videocall
+        </button>
       </div>
     </div>
   );

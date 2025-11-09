@@ -14,6 +14,9 @@ import PageLoader from "./components/PageLoader.jsx";
 import useAuthUser from "./hooks/useAuthUser.js";
 import Layout from "./components/Layout.jsx";
 import { useThemeStore } from "./store/useThemeStore.js";
+import CustomVideoCall from "./pages/CustomVideoCall.jsx";
+import useSocket from "./hooks/useSocket.js";
+import GlobalIncomingCallListener from "./components/GlobalIncomingCallListener.jsx";
 
 const App = () => {
   const { isLoading, authUser } = useAuthUser();
@@ -21,11 +24,13 @@ const App = () => {
 
   const isAuthenticated = Boolean(authUser);
   const isOnboarded = authUser?.isOnboarded;
+  useSocket(authUser?._id);
 
   if (isLoading) return <PageLoader />;
 
   return (
     <div className="h-screen" data-theme={theme}>
+      <GlobalIncomingCallListener />
       <Routes>
         <Route
           path="/"
@@ -42,13 +47,21 @@ const App = () => {
         <Route
           path="/signup"
           element={
-            !isAuthenticated ? <SignUpPage /> : <Navigate to={isOnboarded ? "/" : "/onboarding"} />
+            !isAuthenticated ? (
+              <SignUpPage />
+            ) : (
+              <Navigate to={isOnboarded ? "/" : "/onboarding"} />
+            )
           }
         />
         <Route
           path="/login"
           element={
-            !isAuthenticated ? <LoginPage /> : <Navigate to={isOnboarded ? "/" : "/onboarding"} />
+            !isAuthenticated ? (
+              <LoginPage />
+            ) : (
+              <Navigate to={isOnboarded ? "/" : "/onboarding"} />
+            )
           }
         />
         <Route
@@ -73,6 +86,16 @@ const App = () => {
             )
           }
         />
+        <Route
+          path="/videocall"
+          element={
+            isAuthenticated && isOnboarded ? (
+              <CustomVideoCall />
+            ) : (
+              <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
+            )
+          }
+        />
 
         <Route
           path="/chat/:id"
@@ -80,18 +103,6 @@ const App = () => {
             isAuthenticated && isOnboarded ? (
               <Layout showSidebar={false}>
                 <ChatPage />
-              </Layout>
-            ) : (
-              <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
-            )
-          }
-        />
-        <Route
-          path="/chat-logout"
-          element={
-            isAuthenticated && isOnboarded ? (
-              <Layout showSidebar={false}>
-                <ChatLogoutLoader />
               </Layout>
             ) : (
               <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />

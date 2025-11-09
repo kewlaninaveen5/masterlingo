@@ -166,7 +166,7 @@ export const getOutgoingFriendRequests = async (req, res, next) => {
         "recipient",
         "fullName profilePic nativeLanguage learningLanguage"
       );
-      console.log("outgoingReqs: ", outgoingReqs)
+      // console.log("outgoingReqs: ", outgoingReqs)
     res.status(200).json(outgoingReqs);
   } catch (error) {
     console.log("Error in getOutgoingFriendRequests Controller", error);

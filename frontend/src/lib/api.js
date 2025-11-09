@@ -55,11 +55,18 @@ export async function getFriendRequests() {
 }
 
 export async function acceptFriendRequest(requestId) {
-  const response = await axiosInstance.put(`/users/friend-request/${requestId}/accept`);
+  const response = await axiosInstance.put(
+    `/users/friend-request/${requestId}/accept`
+  );
   return response.data;
 }
 
 export async function getStreamToken() {
   const response = await axiosInstance.get("/chat/token");
+  return response.data;
+}
+
+export async function createVideoCall(data) {
+  const response = await axiosInstance.post(`/videocall/create`, data);
   return response.data;
 }
