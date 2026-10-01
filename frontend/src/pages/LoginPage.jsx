@@ -144,7 +144,7 @@ const LoginPage = () => {
                     <p className="text-sm">
                       Login to TEST USER 2?{" "}
                       <button
-                        onClick={() => handleTestUserLogin("test@gmail.com")}
+                        onClick={() => handleTestUserLogin("test2@gmail.com")}
                         className="text-primary hover:underline"
                       >
                         Login Here

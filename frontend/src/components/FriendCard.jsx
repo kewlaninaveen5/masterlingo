@@ -24,8 +24,8 @@ const FriendCard = ({ friend }) => {
       console.log("video call created: ", data);
       initiateCall({
         callId: data.webURL,
-        to: friend._id,
-        from: authUser._id, // your current logged-in user
+        to: friend.id,
+        from: authUser.id, // your current logged-in user
         type: "one_to_one",
       });
     },
@@ -38,7 +38,7 @@ const FriendCard = ({ friend }) => {
     
 
     createVideoCallData({
-      callToUser: friend._id,
+      callToUser: friend.id,
       type: "one_to_one",
     });
   };
@@ -64,7 +64,7 @@ const FriendCard = ({ friend }) => {
           </span>
         </div>
 
-        <Link to={`/chat/${friend._id}`} className="btn btn-outline w-full">
+        <Link to={`/chat/${friend.id}`} className="btn btn-outline w-full">
           Message
         </Link>
         <button

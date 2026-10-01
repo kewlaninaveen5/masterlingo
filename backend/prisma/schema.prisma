@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum FriendRequestStatus {
+  pending
+  accepted
+}
+
+enum VideoCallStatus {
+  active
+  ended
+}
+
+model User {
+  id               String  @id @default(cuid())
+  fullName         String
+  email            String  @unique
+  password         String
+  bio              String  @default("")
+  profilePic       String  @default("")
+  nativeLanguage   String  @default("")
+  learningLanguage String  @default("")
+  location         String  @default("")
+  isOnboarded      Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Friends
+  friends UserFriend[] @relation("UserFriends")
+
+  // Friend requests
+  sentFriendRequests     FriendRequest[] @relation("SentFriendRequests")
+  receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
+
+  // Video calls
+  administeredVideoCalls VideoCallChannel[] @relation("VideoCallAdmin")
+  videoCallMemberships   VideoCallMember[]
+  userFriends            UserFriend[]
+}
+
+model UserFriend {
+  userId   String
+  friendId String
+
+  user   User @relation("UserFriends", fields: [userId], references: [id])
+  friend User @relation(fields: [friendId], references: [id])
+
+  @@id([userId, friendId])
+}
+
+model FriendRequest {
+  id String @id @default(cuid())
+
+  senderId    String
+  recipientId String
+
+  sender    User @relation("SentFriendRequests", fields: [senderId], references: [id])
+  recipient User @relation("ReceivedFriendRequests", fields: [recipientId], references: [id])
+
+  status FriendRequestStatus @default(pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VideoCallChannel {
+  id String @id @default(cuid())
+
+  webURL String @unique
+
+  adminId String
+  admin   User   @relation("VideoCallAdmin", fields: [adminId], references: [id])
+
+  members VideoCallMember[]
+
+  type        String
+  status      VideoCallStatus @default(active)
+  maxDuration Int             @default(900000)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VideoCallMember {
+  videoCallChannelId String
+  userId             String
+
+  videoCallChannel VideoCallChannel @relation(fields: [videoCallChannelId], references: [id])
+  user             User             @relation(fields: [userId], references: [id])
+
+  @@id([videoCallChannelId, userId])
+}

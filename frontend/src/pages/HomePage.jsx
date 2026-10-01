@@ -22,6 +22,7 @@ const HomePage = () => {
   const { data: friends = [], isLoading: loadingFriends } = useQuery({
     queryKey: ["friends"],
     queryFn: getUserFriends,
+    onSuccess: (friends) => console.log(friends)
   });
 
   const { data: recommendedUsers = [], isLoading: loadingUsers } = useQuery({
@@ -51,7 +52,7 @@ const HomePage = () => {
       console.log("Inside")
 
       outgoingFriendReqs.forEach((req) => {
-        outgoingIds.add(req.recipient._id);
+        outgoingIds.add(req.recipient.id);
       });
       setOutgoingRequestsIds(outgoingIds);
     }
@@ -76,9 +77,10 @@ const HomePage = () => {
           <NoFriendsFound />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {friends.map((friend) => (
-              <FriendCard key={friend._id} friend={friend} />
-            ))}
+            {friends.map((friend) => {
+              console.log(friend)
+              return <FriendCard key={friend.id} friend={friend} />
+            })}
           </div>
         )}
 
@@ -108,14 +110,14 @@ const HomePage = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {recommendedUsers.map((user) => {
-                const hasRequestBeenSent = outgoingRequestsIds.has(user._id);
+                const hasRequestBeenSent = outgoingRequestsIds.has(user.id);
                 // console.log("hasRequestBeenSent: ", hasRequestBeenSent)
-                // console.log("user._id: ", user._id)
+                // console.log("user.id: ", user.id)
                 // console.log("outgoingRequestsIds: ", outgoingRequestsIds)
 
                 return (
                   <div
-                    key={user._id}
+                    key={user.id}
                     className="card bg-base-200 hover:shadow-lg transition-all duration-300"
                   >
                     <div className="card-body p-5 space-y-4">
@@ -154,7 +156,7 @@ const HomePage = () => {
                         className={`btn w-full mt-2 ${
                           hasRequestBeenSent ? "btn-disabled" : "btn-primary"
                         } `}
-                        onClick={() => sendRequestMutation(user._id)}
+                        onClick={() => sendRequestMutation(user.id)}
                         disabled={hasRequestBeenSent || isPending}
                       >
                         {hasRequestBeenSent ? (

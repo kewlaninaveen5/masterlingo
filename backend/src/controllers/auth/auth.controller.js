@@ -1,10 +1,13 @@
-import { upsertStreamUser } from "../lib/stream.js";
-import User from "../models/User.js";
+// import { upsertStreamUser } from "../../lib/stream.js";
+// import user from "../../models/user.js";
 import jwt from "jsonwebtoken";
+import { prisma } from "../../lib/prismaClient.js";
+import authHelper from "../../services/authHelper.js";
+
 
 // const createJWTToken = () => {
 //         const token = jwt.sign(
-//       { userId: newUser._id },
+//       { userId: newUser.id },
 //       process.env.JWT_SECRET_KEY,
 //       {
 //         expiresIn: "7d",
@@ -22,12 +25,14 @@ import jwt from "jsonwebtoken";
 export const deleteUser = async (userId) => {
   // this is non functional
   try {
+    //why does this codepiece exist? who wants to delete a user? If I need a transaction, I better use (tx) right....
     await User.findByIdAndDelete(userId);
     console.log(`Deleted user with ID: ${userId}`);
   } catch (err) {
     console.error(`Error deleting user with ID ${userId}:`, err);
   }
 };
+
 
 export const signup = async (req, res, next) => {
   const { email, password, fullName } = req.body;
@@ -49,7 +54,13 @@ export const signup = async (req, res, next) => {
     }
     console.log("email and password passed validation, checking existing user")
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email : email
+      }
+    })
+    
+    // await user.findOne({ email });
     if (existingUser)
       return res.status(400).json({
         message: "Email already exists. Please use a different email",
@@ -57,37 +68,51 @@ export const signup = async (req, res, next) => {
     console.log("No existing user")
     const lowerCaseEmail = email.toLowerCase()
     const idx = Math.floor(Math.random() * 100) + 1; // generate number b/w 1 and 100
-    const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
+    const randomAvatar = `https://robohash.org/${idx}`;
     console.log("Creating new user", lowerCaseEmail)
-    const newUser = await User.create({
-      email: lowerCaseEmail,
-      fullName,
-      password,
-      profilePic: randomAvatar,
-    });
-    console.log("Created new user")
 
-    try {
-      console.log("Stream User ID: ", newUser._id.toString());
+    const encryptedPassword = await authHelper.encrypt(password)
+    console.log("encryptedPassword: ", encryptedPassword)
 
-      await upsertStreamUser({
-        id: newUser._id.toString(),
-        name: fullName,
-        image: newUser.profilePic || "",
-      });
-      console.log(`stream user created for ${newUser.fullName}`);
-    } catch (error) {
-      console.log(`starting to delete user now`);
-      await deleteUser(newUser._id); // this is non functional
-      console.log(`Error creating stream user: `, error);
-      return res.status(400).json({
-        message: "Unable to create Stream user. Please try again later",
-        error,
-      });
-    }
+
+
+    const newUser = await prisma.user.create({
+      data: {
+        email: lowerCaseEmail,
+        fullName,
+        password : encryptedPassword,
+        profilePic: randomAvatar,
+      }
+    })
+    // const newUser = await user.create({
+    //   email: lowerCaseEmail,
+    //   fullName,
+    //   password,
+    //   profilePic: randomAvatar,
+    // });
+    console.log("Created new user", newUser)
+
+    // try {
+    //   console.log("Stream user ID: ", newUser.id.toString());
+
+    //   await upsertStreamUser({
+    //     id: newUser.id.toString(),
+    //     name: fullName,
+    //     image: newUser.profilePic || "",
+    //   });
+    //   console.log(`stream user created for ${newUser.fullName}`);
+    // } catch (error) {
+    //   console.log(`starting to delete user now`);
+    //   await deleteUser(newUser.id); // this is non functional
+    //   console.log(`Error creating stream user: `, error);
+    //   return res.status(400).json({
+    //     message: "Unable to create Stream user. Please try again later",
+    //     error,
+    //   });
+    // }
 
     const token = jwt.sign(
-      { userId: newUser._id },
+      { userId: newUser.id },
       process.env.JWT_SECRET_KEY,
       {
         expiresIn: "7d",
@@ -100,7 +125,7 @@ export const signup = async (req, res, next) => {
       sameSite: "strict",
       secure: process.env.NODE_ENV === "production",
     });
-
+    console.log("finish signup")
     res.status(201).json({ success: true, user: newUser });
   } catch (error) {
     console.log("error in signup controller: ", error);
@@ -115,18 +140,20 @@ export const login = async (req, res, next) => {
     if (!email || !password)
       return res.status(400).json({ message: "All Fields are required" });
     
-    const user = await User.findOne({ email });
+    const user = await prisma.user.findUnique({ 
+      where : {
+        email : email
+      }
+     });
+    // const user = await user.findOne({ email });
     if (!user) {
-      console.log("user not found")
-
       return res.status(401).json({ message: "Invalid email or password" });
     }
-
-    const isPasswordCorrect = await user.matchPassword(password);
+    const isPasswordCorrect = await authHelper.matchPassword(password, user?.password)
     if (!isPasswordCorrect)
       return res.status(401).json({ message: "Invalid email or password" });
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, {
       expiresIn: "7d",
     });
 
@@ -152,7 +179,7 @@ export const logout = async (req, res, next) => {
 export const onboard = async (req, res, next) => {
   console.log(req.user);
   try {
-    const userId = req.user._id;
+    const userId = req.user.id;
     const { fullName, bio, nativeLanguage, learningLanguage, location } =
       req.body;
     if (!fullName || !bio || !nativeLanguage || !learningLanguage || !location)
@@ -166,34 +193,27 @@ export const onboard = async (req, res, next) => {
           !location && "location",
         ].filter(Boolean),
       });
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      {
-        ...req.body,
-        isOnboarded: true,
-      },
-      { new: true }
-    );
+      const updatedUser = await prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          fullName, bio, nativeLanguage, learningLanguage, location,
+          isOnboarded: true,
+        },
+      });
+    // const updatedUser = await user.findByIdAndUpdate(
+    //   userId,
+    //   {
+    //     ...req.body,
+    //     isOnboarded: true,
+    //   },
+    //   { new: true }
+    // );
     console.log("updatedUser: ", updatedUser);
 
     if (!updatedUser)
-      return res.status(404).json({ message: "User Not Found" });
-    try {
-      await upsertStreamUser({
-        id: updatedUser._id.toString(),
-        name: updatedUser.fullName,
-        image: updatedUser.profilePic || "",
-      });
-      console.log(
-        "Stream user updated after onboarding for ",
-        updatedUser.fullName
-      );
-    } catch (streamError) {
-      console.log(
-        "Error updating Stream User after onboarding: ",
-        streamError.message
-      );
-    }
+      return res.status(404).json({ message: "user Not Found" });
 
     res.status(200).json({ success: true, user: updatedUser });
   } catch (error) {

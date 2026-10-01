@@ -19,7 +19,7 @@ const videoCallChannelSchema = new mongoose.Schema(
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'User',
         required: true,
-        comment: "list of _id of allowed members",
+        comment: "list of id of allowed members",
     },
     type: {
         type: String,

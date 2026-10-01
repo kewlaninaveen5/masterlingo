@@ -10,6 +10,7 @@ import cors from "cors";
 import http from "http";
 import path from 'path';
 import { initSocket } from "./lib/sockets.js";
+import { res400 } from "./utils/responseUtils/400.js";
 
 dotenv.config();
 const app = express();
@@ -27,11 +28,12 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
+console.log("reached server")
+app.use("/api/auth", authRoutes); //migration to prisma complete
+app.use("/api/users", userRoutes); //migration to prisma complete
 
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/chat", chatRoutes);
-app.use("/api/videocall", videocallRoutes)
+app.use("/api/chat", chatRoutes); //cant migrate since removed stream, will add self hosted chats. 
+app.use("/api/videocall", videocallRoutes) //not yet migrated to prisma. will probably recreate  this entire feature
 
 initSocket(server);
 

@@ -24,7 +24,7 @@ const App = () => {
 
   const isAuthenticated = Boolean(authUser);
   const isOnboarded = authUser?.isOnboarded;
-  useSocket(authUser?._id);
+  useSocket(authUser?.id);
 
   if (isLoading) return <PageLoader />;
 

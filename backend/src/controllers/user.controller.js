@@ -1,17 +1,43 @@
-import FriendRequest from "../models/FriendRequest.js";
+import { prisma } from "../lib/prismaClient.js";
 import User from "../models/User.js";
+import { r500 } from "../utils/responseUtils/400.js";
 
 export const getRecommendedUsers = async (req, res, next) => {
   try {
-    const currentUserId = req.user.id;
-    const currentUser = req.user;
-    const recommendedUsers = await User.find({
-      $and: [
-        { _id: { $ne: currentUserId } }, //exculude current user
-        { _id: { $nin: currentUser.friends } }, //exculude current user's friends
-        { isOnboarded: true }, //exculude current user's friends
-      ],
+
+    const currentUser = await prisma.user.findUnique({
+      where: {
+        id: req.user.id,
+      },
+      include: {
+        friends: true,
+      },
     });
+
+    console.log("currentUser: ", currentUser)
+
+
+    const friendIds = currentUser?.friends.map(
+      (friend) => friend.friendId
+    );
+
+
+    const recommendedUsers = await prisma.user.findMany({
+      where: {
+        id: {
+          notIn: [currentUser?.id, ...friendIds]
+        },
+        isOnboarded: true
+      }
+    })
+    // mongoDb version
+    // user.find({
+    //   $and: [
+    //     { id: { $ne: currentUserId } }, //exculude current user
+    //     { id: { $nin: currentUser.friends } }, //exculude current user's friends
+    //     { isOnboarded: true }, //exculude current user's friends
+    //   ],
+    // });
     res.status(200).json(recommendedUsers);
   } catch (error) {
     console.log("Error in getRecommended Controller", error);
@@ -21,13 +47,32 @@ export const getRecommendedUsers = async (req, res, next) => {
 
 export const getMyFriends = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user.id)
-      .select("friends")
-      .populate(
-        "friends",
-        "fullName profilePic nativeLanguage learningLanguage "
-      );
-    res.status(200).json(user.friends);
+    const user = await prisma.user.findUnique({
+      where : {
+        id : req.user.id
+      },
+      include : {
+          friends: {
+            include : {
+              friend : {
+                select : {
+              fullName: true,
+              id : true,
+              profilePic: true, 
+              nativeLanguage : true, 
+              learningLanguage : true
+            }
+          }
+        }
+        }
+      }
+    })
+
+    console.log("USER: ", user.friends)
+    const friends = user.friends.map((f)=>f.friend)
+    
+
+    res.status(200).json(friends);
   } catch (error) {
     console.log("Error in getMyFriends Controller", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -51,12 +96,23 @@ export const sendFriendRequest = async (req, res, next) => {
         .json({ message: "You can't send friend request to yourself!" });
     }
     console.log("Recipient id is different : checked. Checking recipient now")
-    const recipient = await User.findById(recipientId);
+    const recipient = await prisma.user.findUnique({
+      where: {
+        id : recipientId
+      },
+      include : {
+        friends : true
+      }
+    })
+    // mongo db version
+    // await user.findById(recipientId);
     if (!recipient) {
       return res.status(404).json({ message: "Recipient not found" });
     }
-    console.log("Found recipient now: ", recipient)
-    if (recipient.friends.includes(myId)) {
+
+    const recipientFriendsIds = recipient?.friends.map((f)=>f.friendId)
+    console.log("Found recipient now: ", recipientFriendsIds)
+    if (recipientFriendsIds.includes(myId)) {
       console.log("recipient.friends.includes me")
       return res
       .status(400)
@@ -64,12 +120,25 @@ export const sendFriendRequest = async (req, res, next) => {
     }
     console.log("recipient.friends does not include me")
     
-    const existingRequest = await FriendRequest.findOne({
-      $or: [
-        { sender: myId, recipient: recipientId },
-        { sender: recipientId, recipient: myId },
-      ],
+    // ✅ High performance, but requires making two separate database hits or a schema match
+    const existingRequest = await prisma.friendRequest.findFirst({
+      where: { 
+        senderId: myId, recipientId: recipientId 
+      }
+    }) ?? await prisma.friendRequest.findFirst({
+      where: {
+        senderId: recipientId, recipientId: myId 
+      }
     });
+
+    // mongo db version
+
+    //     friendRequest.findOne({
+    //   $or: [
+    //     { sender: myId, recipient: recipientId },
+    //     { sender: recipientId, recipient: myId },
+    //   ],
+    // });
     
     console.log("existing request: ", existingRequest)
     if (existingRequest) {
@@ -79,10 +148,20 @@ export const sendFriendRequest = async (req, res, next) => {
         .json({ message: "A friend request already exists" });
     }
 
-    const friendRequest = await FriendRequest.create({
-      sender: myId,
-      recipient: recipientId,
-    });
+    const friendRequest = await prisma.friendRequest.create({
+      data: {
+        senderId: myId,
+        recipientId
+      }
+    })
+    if (!friendRequest) {
+      r500(res, "some error occured")
+    }
+    
+    // friendRequest.create({
+    //   sender: myId,
+    //   recipient: recipientId,
+    // });
 
     res.status(201).json(friendRequest);
   } catch (error) {
@@ -95,7 +174,13 @@ export const acceptFriendRequest = async (req, res, next) => {
   console.log("Inside acceptFriendRequest")
   try {
     const { id: requestId } = req.params;
-    const friendRequest = await FriendRequest.findById(requestId);
+    const friendRequest = await prisma.friendRequest.findUnique({
+      where : {
+        id : requestId
+      }
+    })
+      
+      // friendRequest.findById(requestId);
     console.log("friendRequest: ", friendRequest)
     console.log("requestId: ", requestId)
     
@@ -103,23 +188,37 @@ export const acceptFriendRequest = async (req, res, next) => {
       return res.status(404).json({ message: "Friend request not found" });
     }
     
-    console.log("friendRequest.recipient.toString(): ", friendRequest.recipient.toString())
+    console.log("friendRequest.recipientId ", friendRequest.recipientId)
     console.log("req.user.id: ", req.user.id)
-    if (friendRequest.recipient.toString() !== req.user.id) {
+    if (friendRequest.recipientId !== req.user.id) {
       console.log("this?")
       return res
         .status(403)
         .json({ message: "User not authorised to accept the request" });
     }
     friendRequest.status = "accepted";
-    await friendRequest.save();
+    await prisma.friendRequest.update({
+      where: {
+        id : requestId
+      },
+      data : {
+        status: "accepted"
+      }
+    })
+    // await friendRequest.save();
 
-    //add each user to other's friends array
-    await User.findByIdAndUpdate(friendRequest.sender, {
-      $addToSet: { friends: friendRequest.recipient },
-    });
-    await User.findByIdAndUpdate(friendRequest.recipient, {
-      $addToSet: { friends: friendRequest.sender },
+    await prisma.userFriend.createMany({
+      data: [
+        {
+          userId: friendRequest.senderId,
+          friendId: friendRequest.recipientId,
+        },
+        {
+          userId: friendRequest.recipientId,
+          friendId: friendRequest.senderId,
+        },
+      ],
+      skipDuplicates: true,
     });
 
     res.status(200).json({ message: "Friend Request Accepted" });
@@ -131,22 +230,40 @@ export const acceptFriendRequest = async (req, res, next) => {
 
 export const getFriendRequests = async (req, res, next) => {
   try {
-    const incomingReqs = await FriendRequest
-      .find({
-        recipient: req.user.id,
-        status: "pending",
-      })
-      .populate(
-        "sender",
-        "fullName profilePic nativeLanguage learningLanguage"
-      );
 
-    const acceptedReqs = await FriendRequest
-      .find({
-        sender: req.user.id,
+    const incomingReqs = await prisma.friendRequest.findMany({
+      where: {
+        recipientId: req.user.id,
+        status: "pending",
+      },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            fullName: true,
+            profilePic: true,
+            nativeLanguage: true,
+            learningLanguage: true,
+          },
+        },
+      },
+    });
+
+    const acceptedReqs = await prisma.friendRequest.findMany({
+      where: {
+        senderId: req.user.id,
         status: "accepted",
-      })
-      .populate("recipient", "fullName profilePic");
+      },
+      include: {
+        recipient: {
+          select: {
+            id: true,
+            fullName: true,
+            profilePic: true,
+          },
+        },
+      },
+    });
 
     res.status(200).json({ incomingReqs, acceptedReqs });
   } catch (error) {
@@ -157,16 +274,25 @@ export const getFriendRequests = async (req, res, next) => {
 
 export const getOutgoingFriendRequests = async (req, res, next) => {
   try {
-    const outgoingReqs = await FriendRequest
-      .find({
-        sender: req.user.id,
+
+    const outgoingReqs = await prisma.friendRequest.findMany({
+      where: {
+        senderId: req.user.id,
         status: "pending",
-      })
-      .populate(
-        "recipient",
-        "fullName profilePic nativeLanguage learningLanguage"
-      );
-      // console.log("outgoingReqs: ", outgoingReqs)
+      },
+      include: {
+        recipient: {
+          select: {
+            id: true,
+            fullName: true,
+            profilePic: true,
+            nativeLanguage: true,
+            learningLanguage: true,
+          },
+        },
+      },
+    });
+
     res.status(200).json(outgoingReqs);
   } catch (error) {
     console.log("Error in getOutgoingFriendRequests Controller", error);

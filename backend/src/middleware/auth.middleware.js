@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import User from '../models/User.js'
+import { prisma } from '../lib/prismaClient.js';
 
 
 export const protectRoute = async (req,res,next) => {
@@ -17,9 +17,18 @@ export const protectRoute = async (req,res,next) => {
             console.log("token is not matching")
             return res.status(401).json({message: "Unauthorized - Invalid token"})
         }
+        console.log("decoded: ", decoded)
         // console.log("token decoded, awaiting user")
-        
-        const user = await User.findById(decoded.userId).select("-password")
+        const user = await prisma.user.findUnique({
+            where: {
+                id : decoded.userId
+            },
+            omit : {
+                password: true
+            } 
+        })
+
+        console.log(user)
         // console.log("token decoded, awaiting user")
         if (!user) {
             console.log("User not found")

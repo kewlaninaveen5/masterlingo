@@ -44,7 +44,7 @@ const NotificationsPage = () => {
                 <div className="space-y-3">
                   {incomingRequests.map((request) => (
                     <div
-                      key={request._id}
+                      key={request.id}
                       className="card bg-base-200 shadow-sm hover:shadow-md transition-shadow"
                     >
                       <div className="card-body p-4">
@@ -68,7 +68,7 @@ const NotificationsPage = () => {
 
                           <button
                             className="btn btn-primary btn-sm"
-                            onClick={() => acceptRequestMutation(request._id)}
+                            onClick={() => acceptRequestMutation(request.id)}
                             disabled={isPending}
                           >
                             Accept
@@ -91,7 +91,7 @@ const NotificationsPage = () => {
 
                 <div className="space-y-3">
                   {acceptedRequests.map((notification) => (
-                    <div key={notification._id} className="card bg-base-200 shadow-sm">
+                    <div key={notification.id} className="card bg-base-200 shadow-sm">
                       <div className="card-body p-4">
                         <div className="flex items-start gap-3">
                           <div className="avatar mt-1 size-10 rounded-full">

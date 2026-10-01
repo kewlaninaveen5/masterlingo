@@ -13,7 +13,7 @@ export const postCreateVideoCall = async (req, res, next) => {
 
   console.log(req.user);
   const { callToUser, type } = req.body;
-  const admin = req.user?._id;
+  const admin = req.user?.id;
   console.log(admin);
   try {
     if (!callToUser)
@@ -102,7 +102,7 @@ export const getVideoCall = async (req, res) => {
         .status(404)
         .json({ message: "The call you are trying to reach has ended" });
 
-    if (!call.members.includes(user._id))
+    if (!call.members.includes(user.id))
       return res
         .status(403)
         .json({ message: "User not authorized to join the call" });
