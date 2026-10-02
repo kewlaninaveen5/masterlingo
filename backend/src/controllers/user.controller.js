@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prismaClient.js";
 import User from "../models/User.js";
-import { r500 } from "../utils/responseUtils/400.js";
+import { r500 } from "../utils/responseUtils/responses.js";
 
 export const getRecommendedUsers = async (req, res, next) => {
   try {

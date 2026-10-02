@@ -10,7 +10,7 @@ import cors from "cors";
 import http from "http";
 import path from 'path';
 import { initSocket } from "./lib/sockets.js";
-import { res400 } from "./utils/responseUtils/400.js";
+import { connectRedis } from "./lib/redis.js";
 
 dotenv.config();
 const app = express();
@@ -18,6 +18,8 @@ const server = http.createServer(app);
 const PORT = process.env.PORT;
 
 const __dirname = path.resolve();
+
+await connectRedis();
 
 app.use(
   cors({

@@ -1,12 +1,37 @@
 import jwt from 'jsonwebtoken'
 import { prisma } from '../lib/prismaClient.js';
+import redis from '../lib/redis.js';
+import { r400 } from '../utils/responseUtils/responses.js';
+import authHelper from '../services/authHelper.js';
 
 
 export const protectRoute = async (req,res,next) => {
-    // console.log("[backend/src/middleware/auth] req.cookies: ", req.cookies)
     try {
-        // console.log("entered try")
-        const token = req.cookies.jwt;
+
+        const sessionId = req.cookies.sessionId
+        console.log("sessionId: ", sessionId)
+        const sessionJWT = await redis.get(`session-${sessionId}`)
+
+        if (!sessionJWT) {
+            console.log("unable to login becasue sessionId not in redis ")
+            return r400(res, "session logged out, please login again")
+        }
+
+        req.jwt = sessionJWT
+        next()
+    } catch (error) {
+
+        console.log("Error in protectRoute middleware", error)
+        res.status(500).json({message: "Internal Server Error"})
+        
+    }
+}
+
+    export const attachUser = async (req,res,next) => {
+
+
+        try {
+        const token = req.jwt;
         if (!token) {
             console.log("no token")
             return res.status(401).json({message: "Unauthorized - No user token provided"})
@@ -17,24 +42,21 @@ export const protectRoute = async (req,res,next) => {
             console.log("token is not matching")
             return res.status(401).json({message: "Unauthorized - Invalid token"})
         }
-        console.log("decoded: ", decoded)
-        // console.log("token decoded, awaiting user")
-        const user = await prisma.user.findUnique({
-            where: {
-                id : decoded.userId
-            },
-            omit : {
-                password: true
-            } 
-        })
+        const user = await authHelper.getUser(decoded.userId)
+        
+        // await prisma.user.findUnique({
+        //     where: {
+        //         id : decoded.userId
+        //     },
+        //     omit : {
+        //         password: true
+        //     } 
+        // })
 
-        console.log(user)
-        // console.log("token decoded, awaiting user")
         if (!user) {
             console.log("User not found")
             return res.status(401).json({message: "Unauthorized - User not found"})
         }
-        // console.log("user found")
 
         req.user = user;
         next()

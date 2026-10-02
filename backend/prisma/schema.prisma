@@ -23,6 +23,7 @@ model User {
   email            String  @unique
   password         String
   bio              String  @default("")
+  profilePicIdx    Int     @default(1)  
   profilePic       String  @default("")
   nativeLanguage   String  @default("")
   learningLanguage String  @default("")
