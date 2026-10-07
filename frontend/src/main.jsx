@@ -8,16 +8,20 @@ import { BrowserRouter } from "react-router";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
-import {socketStore} from './redux/socketIO/socketStore.js'
+import { socketStore } from './redux/socketIO/socketStore.js'
+import { SocketProvider } from "./socket/SocketProvider.jsx";
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
+
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <Provider store={socketStore}>
-        <App />
+          <SocketProvider>
+            <App />
+          </SocketProvider>
         </Provider>
       </QueryClientProvider>
     </BrowserRouter>
