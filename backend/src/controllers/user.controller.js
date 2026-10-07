@@ -1,6 +1,7 @@
 import { prisma } from "../lib/prismaClient.js";
+import redis from "../lib/redis.js";
 import User from "../models/User.js";
-import { r500 } from "../utils/responseUtils/responses.js";
+import { r200, r500 } from "../utils/responseUtils/responses.js";
 
 export const getRecommendedUsers = async (req, res, next) => {
   try {
@@ -45,6 +46,19 @@ export const getRecommendedUsers = async (req, res, next) => {
   }
 };
 
+export const getLastSeen = async (friendId) => {
+  try {
+    const lastSeenDate = await redis.get(`user:${friendId}:lastSeen`)
+    console.log("lastSeenDate: ", lastSeenDate, friendId)
+    if (!lastSeenDate) {
+      return Date.now() - 30 * 24 * 60 * 60 * 1000 
+    }
+    return lastSeenDate
+  } catch (err) {
+    console.log( err )
+  }
+}
+
 export const getMyFriends = async (req, res, next) => {
   try {
     const user = await prisma.user.findUnique({
@@ -69,7 +83,19 @@ export const getMyFriends = async (req, res, next) => {
     })
 
     console.log("USER: ", user.friends)
-    const friends = user.friends.map((f)=>f.friend)
+    const friends = await Promise.all(user.friends.map(async (f)=>{
+      f.friend.userId = f.friend.id
+      try {
+        f.friend.lastseen = await getLastSeen(f.friend.id)
+      } catch (error) {
+        console.log(error)        
+      }
+      
+      console.log("FRIEND DETAILS: ", f)
+      return f.friend
+    }))
+
+    console.log(friends)
     
 
     res.status(200).json(friends);

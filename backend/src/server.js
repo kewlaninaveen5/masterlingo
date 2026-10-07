@@ -18,6 +18,7 @@ const server = http.createServer(app);
 const PORT = process.env.PORT;
 
 const __dirname = path.resolve();
+initSocket(server);
 
 await connectRedis();
 
@@ -30,14 +31,13 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
-console.log("reached server")
 app.use("/api/auth", authRoutes); //migration to prisma complete
 app.use("/api/users", userRoutes); //migration to prisma complete
+app.use("/api/friends", userRoutes); //migration to prisma complete
 
 app.use("/api/chat", chatRoutes); //cant migrate since removed stream, will add self hosted chats. 
 app.use("/api/videocall", videocallRoutes) //not yet migrated to prisma. will probably recreate  this entire feature
 
-initSocket(server);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, "../frontend/dist"))); 

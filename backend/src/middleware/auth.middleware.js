@@ -10,7 +10,7 @@ export const protectRoute = async (req,res,next) => {
 
         const sessionId = req.cookies.sessionId
         console.log("sessionId: ", sessionId)
-        const sessionJWT = await redis.get(`session-${sessionId}`)
+        const sessionJWT = await redis.get(`user:session:${sessionId}:jwt`)
 
         if (!sessionJWT) {
             console.log("unable to login becasue sessionId not in redis ")

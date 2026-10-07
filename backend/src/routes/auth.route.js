@@ -1,11 +1,11 @@
 import express from "express";
-import {signup, login, logout, onboard, createJWTToken, createAndAttachSessionId, sendUser} from '../controllers/auth/auth.middleware.js'
+import {signup, login, logout, onboard, createJWTToken, createAndAttachSessionId, sendUser, addSessionDataInRedis} from '../controllers/auth/auth.middleware.js'
 import { protectRoute, attachUser } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.post("/signup", signup, createJWTToken, createAndAttachSessionId, sendUser)
-router.post("/login", login, createJWTToken, createAndAttachSessionId, sendUser)
+router.post("/signup", signup, createJWTToken, createAndAttachSessionId, addSessionDataInRedis, sendUser)
+router.post("/login", login, createJWTToken, createAndAttachSessionId, addSessionDataInRedis, sendUser)
 router.post("/logout", logout)
 router.post("/onboarding", protectRoute, attachUser,  onboard)
 

@@ -98,11 +98,8 @@ export const createJWTToken = (req,res,next) => {
 
 export const createAndAttachSessionId = (req, res, next) => {
 
-  const jwt = req.jwt
-
   const sessionId = uuidv4().replace(/-/g, '');
-
-  redis.set(`session-${sessionId}`, jwt,{EX: 3600} ) //1 hour TTL
+  req.sessionId = sessionId
 
   // send session id as cookie with response to frontend
   res.cookie("sessionId", sessionId, {
@@ -115,6 +112,20 @@ export const createAndAttachSessionId = (req, res, next) => {
   next()
 
 }
+
+export const addSessionDataInRedis = async (req,res,next) => {
+
+  const {jwt, sessionId, user} = req
+
+  await redis.set(`user:session:${sessionId}:jwt`,jwt,{EX: 3600} ) //1 hour TTL
+  await redis.set(`user:session:${sessionId}:sessionId`,sessionId,{EX: 3600} ) //1 hour TTL
+  await redis.set(`user:session:${sessionId}:userId`,user.id,{EX: 3600} ) //1 hour TTL
+  await redis.set(`user:${user.id}:lastSeen`,Date.now(),{EX: 3600 * 24 * 31} ) //31 days TTL
+
+  next()
+}
+
+
 
 export const sendUser = (req,res,next) => {
   console.log("req: ", req)
@@ -158,7 +169,9 @@ export const logout = async (req, res, next) => {
   const {sessionId} = req.cookies
   res.clearCookie("jwt");
   res.clearCookie("sessionId");
-  redis.del(`session-${sessionId}`)
+  redis.del(`user:session:${sessionId}:jwt`)
+  const userId = await redis.get(`user:session:${sessionId}:userId`)
+  await redis.set(`user:${userId}:lastSeen`, Date.now(), {EX: 3600 * 24 * 31})
   res.status(200).json({ success: true, message: "Logout Successful" });
 };
 
