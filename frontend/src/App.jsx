@@ -67,7 +67,7 @@ const App = () => {
           path="/friends"
           element={
             isAuthenticated && isOnboarded ? (
-              <Layout openChatBubbles={openChatBubbles} showSidebar={true}>
+              <Layout showSidebar={true}>
                 <FriendsPage updateChatBubbles={(callback) => updateChatBubbles(callback)} />
               </Layout>
             ) : (
