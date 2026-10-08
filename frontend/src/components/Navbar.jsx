@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router";
 import useAuthUser from "../hooks/useAuthUser";
-import { BellIcon, ChevronLeft, LogOutIcon, ShipWheelIcon } from "lucide-react";
+import { BellIcon, Bot, LogOutIcon } from "lucide-react";
 import ThemeSelector from "./ThemeSelector";
 import useLogout from "../hooks/useLogout";
 import { StreamChat } from "stream-chat";
@@ -44,28 +44,28 @@ const Navbar = () => {
         <div className="flex items-center justify-end w-full">
           {/* LOGO - ONLY IN THE CHAT PAGE */}
           {!isHomepage ? (
-            <div className="pl-5">
+            <div className="">
               <button
                 onClick={() => navigationHandler(-1)}
                 className="flex items-center gap-2.5"
               >
                 {/* <ChevronLeft /> */}
-                <ChevronLeft className="size-9 text-primary" />
-                <span className="hidden lg:inline text-3xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary tracking-wider">
-                  Masterlingo
+                <Bot className="size-9 text-primary" />
+                <span className="hidden lg:inline text-3xl font-bold font-mono bg-clip-text bg-gradient-to-r from-primary to-secondary tracking-wider">
+                Home
                 </span>
               </button>
             </div>
           ) : (
-            <div className="pl-5">
+            <div className="">
               <button
                 onClick={() => navigationHandler("/")}
                 className="flex items-center gap-2.5"
               >
                 {/* <ChevronLeft /> */}
-                <ShipWheelIcon className="size-9 text-primary" />
-                <span className="hidden lg:inline text-3xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary tracking-wider">
-                  Masterlingo
+                <Bot className="size-9 text-primary" />
+                <span className="hidden lg:inline text-3xl font-bold font-mono bg-clip-text bg-gradient-to-r from-primary to-secondary tracking-wider">
+                  Home
                 </span>
               </button>
             </div>

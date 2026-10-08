@@ -195,3 +195,10 @@ export const LANGUAGE_TO_FLAG = {
   turkish: "tr",
   dutch: "nl",
 };
+
+export const SocketEvent = Object.freeze({
+  connection : 'connection',
+  userConnected: 'user:connected',
+  MESSAGE_RECEIVED: 'message:received',
+  DISCONNECT: 'disconnect',
+});

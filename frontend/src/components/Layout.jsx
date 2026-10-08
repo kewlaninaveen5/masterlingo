@@ -16,6 +16,9 @@ const Layout = ({ children, showSidebar = false }) => {
 
           <main className="flex-1 overflow-y-auto" data-theme={theme} >{children}</main>
         </div>
+        {/* {console.log("openChatBubbles : ", openChatBubbles)}
+        {openChatBubbles && openChatBubbles.map((user, i) => (<ChatBubble user={user}  />))} */}
+
       </div>
     </div>
   );

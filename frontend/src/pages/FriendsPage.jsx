@@ -15,9 +15,7 @@ import FriendCard, { getLanguageFlag } from "../components/FriendCard";
 import NoFriendsFound from "../components/NoFriendsFound";
 import toast from "react-hot-toast";
 
-
-//-------------CURRENTLY NOT USED ANYWHERE---------------------
-const HomePage = () => {
+const FriendsPage = (props) => {
   const queryClient = useQueryClient();
   const [outgoingRequestsIds, setOutgoingRequestsIds] = useState(new Set());
 
@@ -81,7 +79,7 @@ const HomePage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {friends.map((friend) => {
               console.log(friend)
-              return <FriendCard key={friend.id} friend={friend} />
+              return <FriendCard key={friend.id} friend={friend} updateChatBubbles={(callback) => props.updateChatBubbles(callback)} />
             })}
           </div>
         )}
@@ -185,4 +183,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default FriendsPage;

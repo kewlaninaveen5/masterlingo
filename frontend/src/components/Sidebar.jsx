@@ -1,14 +1,18 @@
 import { Link, useLocation } from "react-router";
 import useAuthUser from "../hooks/useAuthUser";
-import { BellIcon, HomeIcon, ShipWheelIcon, UsersIcon } from "lucide-react";
+import { Bot, ShipWheelIcon, UsersIcon } from "lucide-react";
+import SearchBox from "./SearchBox";
+import { useThemeStore } from "../store/useThemeStore";
 
 const Sidebar = () => {
   const { authUser } = useAuthUser();
   const location = useLocation();
+  const { theme } = useThemeStore();
+
   const currentPath = location.pathname;
 
   return (
-    <aside className="w-64 bg-base-200 border-r border-base-300 hidden lg:flex flex-col h-screen sticky top-0">
+    <aside className="w-1/4 min-w-[200px] bg-base-200 border-r border-base-300  lg:flex flex-col h-screen sticky top-0" data-theme={theme}>
       <div className="p-5 border-b border-base-300">
         <Link to="/" className="flex items-center gap-2.5">
           <ShipWheelIcon className="size-9 text-primary" />
@@ -18,37 +22,49 @@ const Sidebar = () => {
         </Link>
       </div>
 
-      <nav className="flex-1 p-4 space-y-1">
+
+
+
+
+
+
+      {/* <nav className="flex-1 p-4 space-y-1">
         <Link
           to="/"
           className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${
             currentPath === "/" ? "btn-active" : ""
           }`}
         >
-          <HomeIcon className="size-5 text-base-content opacity-70" />
-          <span>Home</span>
+          <Bot className="size-5 text-base-content opacity-70" />
+          <span>GPT</span>
         </Link>
-
-        <Link
-          to="/friends"
-          className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${
-            currentPath === "/friends" ? "btn-active" : ""
-          }`}
-        >
-          <UsersIcon className="size-5 text-base-content opacity-70" />
-          <span>Friends</span>
-        </Link>
-
         <Link
           to="/notifications"
-          className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${
-            currentPath === "/notifications" ? "btn-active" : ""
-          }`}
+          className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === "/notifications" ? "btn-active" : ""
+            }`}
         >
           <BellIcon className="size-5 text-base-content opacity-70" />
           <span>Notifications</span>
         </Link>
-      </nav>
+      </nav> */}
+
+
+
+
+
+
+      <div aria-label="friends-list" className="p-2 border-b border-base-300">
+        <SearchBox />
+      </div>
+
+      <Link
+        to="/friends"
+        className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === "/friends" ? "btn-active" : ""
+          }`}
+      >
+        <UsersIcon className="size-5 text-base-content opacity-70" />
+        <span>Find Friends</span>
+      </Link>
 
       {/* USER PROFILE SECTION */}
       <div className="p-4 border-t border-base-300 mt-auto">
@@ -67,6 +83,7 @@ const Sidebar = () => {
           </div>
         </div>
       </div>
+
     </aside>
   );
 };

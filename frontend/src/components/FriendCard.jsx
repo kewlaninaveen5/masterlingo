@@ -4,13 +4,13 @@ import toast from "react-hot-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createVideoCall } from "../lib/api";
 import { useDispatch, useSelector } from "react-redux";
-import useSocket from "../hooks/useSocket";
+// import useSocket from "../hooks/useSocket";
 import useAuthUser from "../hooks/useAuthUser";
 import { inCallToTrue } from "../redux/socketIO/socketSlice";
 
 const FriendCard = ({ friend }) => {
   const { authUser } = useAuthUser();
-  const { initiateCall } = useSocket();
+  // const { initiateCall } = useSocket();
   const socketState = useSelector((state) => state.socketFromStore);
   const dispatch = useDispatch();
   // const dispatch = useDispatch();
@@ -32,6 +32,44 @@ const FriendCard = ({ friend }) => {
     onError: (error) => console.log("failed because: ", error),
   });
 
+  const formatLastSeen = (lastSeen) => {
+    console.log("lastSeen : ", lastSeen)
+    const diff = Date.now() - lastSeen;
+    console.log("diff : ", diff/1000)
+
+  
+    const minute = 60 * 1000;
+    const hour = 60 * minute;
+    const day = 24 * hour;
+  
+    if (diff < minute) {
+      return "online";
+    }
+  
+    if (diff < hour) {
+      const minutes = Math.floor(diff / minute);
+      return `${minutes} min ago`;
+    }
+  
+    if (diff < day) {
+      const hours = Math.floor(diff / hour);
+      return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+    }
+  
+    if (diff < 30 * day) {
+      const days = Math.floor(diff / day);
+      return `${days} day${days === 1 ? "" : "s"} ago`;
+    }
+  
+    return "long time ago";
+  }
+
+
+
+
+
+
+
   const initiateVideoCallHandler = async () => {
     toast(`Calling ${friend.fullName} `);
     console.log("socketState: ", socketState);
@@ -50,7 +88,11 @@ const FriendCard = ({ friend }) => {
           <div className="avatar size-12">
             <img src={friend.profilePic} alt={friend.fullName} />
           </div>
+          <div>
+
           <h3 className="font-semibold truncate">{friend.fullName}</h3>
+          <span className="text-xs text-base-content/60">Last Seen : {formatLastSeen(friend.lastseen)} </span>
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-1.5 mb-3">
@@ -64,9 +106,17 @@ const FriendCard = ({ friend }) => {
           </span>
         </div>
 
-        <Link to={`/chat/${friend.id}`} className="btn btn-outline w-full">
+        {/* <Link to={`/chat/${friend.id}`} className="btn btn-outline w-full">
           Message
-        </Link>
+        </Link> */}
+        {/* <button
+        onClick={(e) => updateChatBubbles({add: true, event:e, user : friend})}
+        className={`btn btn-outline w-full ${socketState.inCall ? 'btn-disabled' : ''}`}
+        >
+          Message
+        </button> */}
+
+
         <button
           onClick={initiateVideoCallHandler}
           className={`btn btn-outline w-full ${socketState.inCall ? 'btn-disabled' : ''}`}
