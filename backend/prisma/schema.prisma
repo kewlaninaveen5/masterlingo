@@ -7,6 +7,96 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id                     String             @id @default(cuid())
+  fullName               String
+  email                  String             @unique
+  password               String
+  bio                    String             @default("")
+  profilePic             String             @default("")
+  nativeLanguage         String             @default("")
+  learningLanguage       String             @default("")
+  location               String             @default("")
+  isOnboarded            Boolean            @default(false)
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+  profilePicIdx          Int                @default(1)
+  receivedFriendRequests FriendRequest[]    @relation("ReceivedFriendRequests")
+  sentFriendRequests     FriendRequest[]    @relation("SentFriendRequests")
+  receivedMessages       Message[]          @relation("ReceivedMessages")
+  sentMessages           Message[]          @relation("SentMessages")
+  userFriends            UserFriend[]
+  friends                UserFriend[]       @relation("UserFriends")
+  administeredVideoCalls VideoCallChannel[] @relation("VideoCallAdmin")
+  videoCallMemberships   VideoCallMember[]
+}
+
+model UserFriend {
+  userId   String
+  friendId String
+  friend   User   @relation(fields: [friendId], references: [id])
+  user     User   @relation("UserFriends", fields: [userId], references: [id])
+
+  @@id([userId, friendId])
+}
+
+model FriendRequest {
+  id          String              @id @default(cuid())
+  senderId    String
+  recipientId String
+  status      FriendRequestStatus @default(pending)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  recipient   User                @relation("ReceivedFriendRequests", fields: [recipientId], references: [id])
+  sender      User                @relation("SentFriendRequests", fields: [senderId], references: [id])
+}
+
+model VideoCallChannel {
+  id          String            @id @default(cuid())
+  webURL      String            @unique
+  adminId     String
+  type        String
+  status      VideoCallStatus   @default(active)
+  maxDuration Int               @default(900000)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  admin       User              @relation("VideoCallAdmin", fields: [adminId], references: [id])
+  members     VideoCallMember[]
+}
+
+model VideoCallMember {
+  videoCallChannelId String
+  userId             String
+  user               User             @relation(fields: [userId], references: [id])
+  videoCallChannel   VideoCallChannel @relation(fields: [videoCallChannelId], references: [id])
+
+  @@id([videoCallChannelId, userId])
+}
+
+model Message {
+  id         String        @id @default(cuid())
+  chatroomId String
+  senderId   String
+  receiverId String
+  content    String
+  createdAt  DateTime      @default(now())
+  status     MessageStatus @default(pending)
+  chatroom   ChatRoom      @relation(fields: [chatroomId], references: [id])
+  receiver   User          @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  sender     User          @relation("SentMessages", fields: [senderId], references: [id])
+
+  @@index([chatroomId])
+}
+
+model ChatRoom {
+  id       String    @id @default(cuid())
+  user1Id  String
+  user2Id  String
+  messages Message[]
+
+  @@unique([user1Id, user2Id])
+}
+
 enum FriendRequestStatus {
   pending
   accepted
@@ -17,84 +107,10 @@ enum VideoCallStatus {
   ended
 }
 
-model User {
-  id               String  @id @default(cuid())
-  fullName         String
-  email            String  @unique
-  password         String
-  bio              String  @default("")
-  profilePicIdx    Int     @default(1)  
-  profilePic       String  @default("")
-  nativeLanguage   String  @default("")
-  learningLanguage String  @default("")
-  location         String  @default("")
-  isOnboarded      Boolean @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Friends
-  friends UserFriend[] @relation("UserFriends")
-
-  // Friend requests
-  sentFriendRequests     FriendRequest[] @relation("SentFriendRequests")
-  receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
-
-  // Video calls
-  administeredVideoCalls VideoCallChannel[] @relation("VideoCallAdmin")
-  videoCallMemberships   VideoCallMember[]
-  userFriends            UserFriend[]
-}
-
-model UserFriend {
-  userId   String
-  friendId String
-
-  user   User @relation("UserFriends", fields: [userId], references: [id])
-  friend User @relation(fields: [friendId], references: [id])
-
-  @@id([userId, friendId])
-}
-
-model FriendRequest {
-  id String @id @default(cuid())
-
-  senderId    String
-  recipientId String
-
-  sender    User @relation("SentFriendRequests", fields: [senderId], references: [id])
-  recipient User @relation("ReceivedFriendRequests", fields: [recipientId], references: [id])
-
-  status FriendRequestStatus @default(pending)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model VideoCallChannel {
-  id String @id @default(cuid())
-
-  webURL String @unique
-
-  adminId String
-  admin   User   @relation("VideoCallAdmin", fields: [adminId], references: [id])
-
-  members VideoCallMember[]
-
-  type        String
-  status      VideoCallStatus @default(active)
-  maxDuration Int             @default(900000)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model VideoCallMember {
-  videoCallChannelId String
-  userId             String
-
-  videoCallChannel VideoCallChannel @relation(fields: [videoCallChannelId], references: [id])
-  user             User             @relation(fields: [userId], references: [id])
-
-  @@id([videoCallChannelId, userId])
+enum MessageStatus {
+  failed
+  pending
+  sent
+  delivered
+  read
 }

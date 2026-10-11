@@ -117,9 +117,9 @@ export const addSessionDataInRedis = async (req,res,next) => {
 
   const {jwt, sessionId, user} = req
 
-  await redis.set(`user:session:${sessionId}:jwt`,jwt,{EX: 3600} ) //1 hour TTL
-  await redis.set(`user:session:${sessionId}:sessionId`,sessionId,{EX: 3600} ) //1 hour TTL
-  await redis.set(`user:session:${sessionId}:userId`,user.id,{EX: 3600} ) //1 hour TTL
+  await redis.set(`user:session:${sessionId}:jwt`,jwt,{EX: 3600 * 24} ) //24 hour TTL
+  await redis.set(`user:session:${sessionId}:sessionId`,sessionId,{EX: 3600 * 24} ) //24 hour TTL
+  await redis.set(`user:session:${sessionId}:userId`,user.id,{EX: 3600 * 24} ) //24 hour TTL
   await redis.set(`user:${user.id}:lastSeen`,Date.now(),{EX: 3600 * 24 * 31} ) //31 days TTL
 
   next()

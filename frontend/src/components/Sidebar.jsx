@@ -13,13 +13,21 @@ const Sidebar = () => {
 
   return (
     <aside className="w-1/4 min-w-[200px] bg-base-200 border-r border-base-300  lg:flex flex-col h-screen sticky top-0" data-theme={theme}>
-      <div className="p-5 border-b border-base-300">
+      <div className="p-5 border-b border-base-300 flex m-auto mt-0 mb-0 flex-row w-full justify-between ">
         <Link to="/" className="flex items-center gap-2.5">
           <ShipWheelIcon className="size-9 text-primary" />
           <span className="text-3xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary  tracking-wider">
             Masterlingo
           </span>
         </Link>
+        <Link
+        to="/friends"
+        className={`btn btn-ghost justify-start w-1/3 gap-3 px-3 normal-case ${currentPath === "/friends" ? "btn-active" : ""
+          }`}
+      >
+        <UsersIcon className="size-5 text-base-content opacity-70" />
+        <span>Find Friends</span>
+      </Link>
       </div>
 
 
@@ -55,16 +63,27 @@ const Sidebar = () => {
 
       <div aria-label="friends-list" className="p-2 border-b border-base-300">
         <SearchBox />
+        {["A","B","C","D","TEST INPUT TO BUILD UI"].map((friend, idx)=>{
+
+          return <Link
+          to="/friends" //this should not have link later on because we dont want to change pages, we just want to fetch chatroom data from context and show on the very same page 
+          className={`btn red justify-start m-2 w-full gap-3 px-3 normal-case ${currentPath === "/friends" ? "active" : ""
+            }`}
+        >
+          <UsersIcon className="size-5 text-base-content opacity-70" />
+          <span>{friend}</span>
+        </Link>
+        })}
       </div>
 
-      <Link
+      {/* <Link
         to="/friends"
         className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === "/friends" ? "btn-active" : ""
           }`}
       >
         <UsersIcon className="size-5 text-base-content opacity-70" />
         <span>Find Friends</span>
-      </Link>
+      </Link> */}
 
       {/* USER PROFILE SECTION */}
       <div className="p-4 border-t border-base-300 mt-auto">

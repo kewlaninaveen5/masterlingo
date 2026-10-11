@@ -1,5 +1,20 @@
 <h1 align="center">✨ Fullstack Chat & Video Calling App ✨</h1>
 
+backend starts with npm start, frontend starts with npm run dev 
+
+(expecting you are in root directory)
+To start the backend -> 
+1. Run command `cd backend`
+2. run command `npm install`
+3 run command `npm start`
+
+To start the frontend -> 
+1. Run command `cd frontend`
+2. run command `npm install`
+3 run command `npm run dev`
+
+Project uses prisma and I will create a seed data job soon so that we can setup the test users immediately. 
+
 Whats already built: 
 This repo has 2 sub folders: 
 1. Frontend
