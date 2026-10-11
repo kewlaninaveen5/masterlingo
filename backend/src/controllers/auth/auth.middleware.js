@@ -103,7 +103,7 @@ export const createAndAttachSessionId = (req, res, next) => {
 
   // send session id as cookie with response to frontend
   res.cookie("sessionId", sessionId, {
-    maxAge: 1 * 3600 * 1000,
+    maxAge: 1 * 3600 * 1000 * 24,
     httpOnly: true,
     sameSite: "strict",
     secure: process.env.NODE_ENV === "production",

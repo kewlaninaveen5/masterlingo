@@ -59,7 +59,58 @@ export const getLastSeen = async (friendId) => {
   }
 }
 
+export const attachFriends = async (req,res,next) => {
+
+  try {
+    const user = await prisma.user.findUnique({
+      where : {
+        id : req?.user?.id
+      },
+      include : {
+          friends: {
+            include : {
+              friend : {
+                select : {
+              fullName: true,
+              id : true,
+              profilePic: true, 
+              nativeLanguage : true, 
+              learningLanguage : true
+            }
+          }
+        }
+        }
+      }
+    })
+
+    console.log("USER: ", user)
+    const friends = await Promise.all(user.friends.map(async (f)=>{
+      f.friend.userId = f.friend.id
+      try {
+        f.friend.lastseen = await getLastSeen(f.friend.id)
+      } catch (error) {
+        console.log(error)        
+      }
+      
+      console.log("FRIEND DETAILS: ", f)
+      return f.friend
+    }))
+
+    console.log(friends)
+    
+
+    res.status(200).json(friends);
+  } catch (error) {
+    console.log("Error in getMyFriends Controller", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+
+}
+
+
 export const getMyFriends = async (req, res, next) => {
+
+
   try {
     const user = await prisma.user.findUnique({
       where : {
@@ -82,7 +133,7 @@ export const getMyFriends = async (req, res, next) => {
       }
     })
 
-    console.log("USER: ", user.friends)
+    console.log("USER: ", user)
     const friends = await Promise.all(user.friends.map(async (f)=>{
       f.friend.userId = f.friend.id
       try {

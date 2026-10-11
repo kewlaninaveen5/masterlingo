@@ -91,6 +91,7 @@ model Message {
 model ChatRoom {
   id       String    @id @default(cuid())
   user1Id  String
+  chatRoomUniqueIdentifier String @unique
   user2Id  String
   messages Message[]
 

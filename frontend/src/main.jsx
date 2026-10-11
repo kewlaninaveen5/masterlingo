@@ -9,6 +9,8 @@ import { BrowserRouter } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SocketProvider } from "./ReactContext/socket/SocketProvider.jsx";
 import { UserProvider } from "./ReactContext/UserContext/UserProvider.jsx";
+import { ChatRoomProvider } from "./ReactContext/ChatroomContext/ChatRoomProvider.jsx";
+// import { ChatRoomProvider } from "./ReactContext/UserContext/ChatRoomProvider.jsx";
 
 const queryClient = new QueryClient();
 
@@ -19,7 +21,9 @@ createRoot(document.getElementById("root")).render(
       <QueryClientProvider client={queryClient}>
           <SocketProvider>
             <UserProvider>
-              <App />
+              <ChatRoomProvider>
+                <App />
+              </ChatRoomProvider>
             </UserProvider>
           </SocketProvider>
       </QueryClientProvider>

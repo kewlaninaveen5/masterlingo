@@ -2,7 +2,7 @@ import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import { useThemeStore } from "../store/useThemeStore";
 
-const Layout = ({ children, showSidebar = false }) => {
+const Layout = ({ children, showSidebar = true }) => {
 
   const { theme } = useThemeStore();
 

@@ -38,7 +38,7 @@ const handleSocket = async (socket) => {
 	const sessionId = cookie?.split('=')[1]
 	console.log("SESSION IDDD: ", sessionId)
 
-	await redis.set(`user:session:${sessionId}:socketId`, socket.id, {EX: 3600})
+	await redis.set(`user:session:${sessionId}:socketId`, socket.id, {EX: 3600 * 24})
 	const userId = await redis.get(`user:session:${sessionId}:userId`, 'userId')
 	await redis.set(`user:${userId}:lastSeen`, Date.now(), {EX: 3600 * 24 * 31})
 

@@ -30,8 +30,4 @@ router.get("/me", protectRoute, attachUser, (req, res, next) =>{
 // }
 
 
-
-
-
-
 export default router;

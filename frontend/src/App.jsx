@@ -55,7 +55,7 @@ const App = () => {
           path="/"
           element={
             isAuthenticated && isOnboarded ? (
-              <Layout showSidebar={true}>
+              <Layout >
                 <GptHomePage />
               </Layout>
             ) : (
@@ -67,7 +67,7 @@ const App = () => {
           path="/friends"
           element={
             isAuthenticated && isOnboarded ? (
-              <Layout showSidebar={true}>
+              <Layout >
                 <FriendsPage updateChatBubbles={(callback) => updateChatBubbles(callback)} />
               </Layout>
             ) : (
@@ -100,7 +100,7 @@ const App = () => {
           path="/notifications"
           element={
             isAuthenticated && isOnboarded ? (
-              <Layout showSidebar={true}>
+              <Layout >
                 <NotificationsPage />
               </Layout>
             ) : (
@@ -130,10 +130,10 @@ const App = () => {
         />
 
         <Route
-          path="/chat/:id"
+          path="/chat"
           element={
             isAuthenticated && isOnboarded ? (
-              <Layout showSidebar={false}>
+              <Layout >
                 <ChatPage />
               </Layout>
             ) : (

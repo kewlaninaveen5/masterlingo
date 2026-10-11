@@ -30,8 +30,28 @@ export const completeOnboarding = async (userData) => {
 };
 
 export async function getUserFriends() {
-  const response = await axiosInstance.get("/users/friends");
-  return response.data;
+  try {
+    const response = await axiosInstance.get("/users/friends");
+    return response.data;
+  }catch (error) {
+    console.log("Error in getUserFriends:", error);
+    return null;
+  }
+}
+
+export async function ChatRoom(args) {
+  console.log("Request args:", args);
+
+  try {
+      const response = await axiosInstance.post("/chat/chatroom", args);
+
+      console.log("Response data:", response.data);
+
+      return response.data;
+  } catch (error) {
+      console.error("ChatRoom API failed:", error);
+      throw error;
+  }
 }
 
 export async function getRecommendedUsers() {

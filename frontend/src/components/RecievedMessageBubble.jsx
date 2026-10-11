@@ -1,0 +1,22 @@
+import React from 'react'
+
+const RecievedMessageBubble = ({chatPartner}) => {
+    return (
+        <div class="chat chat-start">
+            <div class="chat-image avatar">
+                <div class="w-8 rounded-full">
+                    <img src={chatPartner.profilePic} alt="User Avatar" />
+                </div>
+            </div>
+            <div class="chat-header text-xs opacity-50 mb-1">
+            {chatPartner.fullName}
+            </div>
+            <div class="chat-bubble chat-bubble-secondary">Still Building</div>
+            <div class="chat-footer opacity-50 text-xs mt-1">
+                12:45 PM STILL BUILDING
+            </div>
+        </div>
+    )
+}
+
+export default RecievedMessageBubble

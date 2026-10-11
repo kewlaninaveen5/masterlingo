@@ -19,7 +19,7 @@ export function UserProvider({ children }) {
 
     return (
         <UserContext.Provider value={{
-            user: authUser ?? null,
+            user: authUser?.user ?? null,
             isLoading,
             isError,
         }}>{children}</UserContext.Provider>

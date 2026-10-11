@@ -1,13 +1,37 @@
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import useAuthUser from "../hooks/useAuthUser";
 import { Bot, ShipWheelIcon, UsersIcon } from "lucide-react";
 import SearchBox from "./SearchBox";
 import { useThemeStore } from "../store/useThemeStore";
+import { getUserFriends } from "../lib/api.js";
+import { useQuery } from "@tanstack/react-query";
+import useChatRoom from "../hooks/useChatroom.js";
+import { useUser } from "../ReactContext/UserContext/UserProvider.jsx";
 
 const Sidebar = () => {
   const { authUser } = useAuthUser();
   const location = useLocation();
   const { theme } = useThemeStore();
+  const { user, isLoading } = useUser();
+
+  const navigate = useNavigate()
+
+
+  const { isPending, error, chatRoomMutation } = useChatRoom();
+
+  const chatRoomUpdateHandler =  (e, friend) => {
+    e.preventDefault()
+    console.log(user, friend)
+    !isLoading && friend ? chatRoomMutation([user.id,friend.id]) : null
+    navigate("/chat")
+  }
+
+
+  const { data: friends = [], isLoading: loadingFriends } = useQuery({
+    queryKey: ["friends"],
+    queryFn: getUserFriends,
+    onSuccess: () => console.log("friends: ", friends)
+  });
 
   const currentPath = location.pathname;
 
@@ -22,68 +46,36 @@ const Sidebar = () => {
         </Link>
         <Link
         to="/friends"
-        className={`btn btn-ghost justify-start w-1/3 gap-3 px-3 normal-case ${currentPath === "/friends" ? "btn-active" : ""
+        className={`btn btn-ghost justify-start gap-3 px-3 normal-case ${currentPath === "/friends" ? "btn-active" : ""
           }`}
       >
         <UsersIcon className="size-5 text-base-content opacity-70" />
-        <span>Find Friends</span>
+        <span>Find</span>
       </Link>
       </div>
 
-
-
-
-
-
-
-      {/* <nav className="flex-1 p-4 space-y-1">
-        <Link
-          to="/"
-          className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${
-            currentPath === "/" ? "btn-active" : ""
-          }`}
-        >
-          <Bot className="size-5 text-base-content opacity-70" />
-          <span>GPT</span>
-        </Link>
-        <Link
-          to="/notifications"
-          className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === "/notifications" ? "btn-active" : ""
-            }`}
-        >
-          <BellIcon className="size-5 text-base-content opacity-70" />
-          <span>Notifications</span>
-        </Link>
-      </nav> */}
-
-
-
-
-
-
       <div aria-label="friends-list" className="p-2 border-b border-base-300">
         <SearchBox />
-        {["A","B","C","D","TEST INPUT TO BUILD UI"].map((friend, idx)=>{
+        {
+          loadingFriends ? null : console.log("friends: ", friends)
+        }
+
+        {loadingFriends ? null : friends.map((friend, idx)=>{
 
           return <Link
-          to="/friends" //this should not have link later on because we dont want to change pages, we just want to fetch chatroom data from context and show on the very same page 
+          key = {idx}
+
+          onClick={(e)=> chatRoomUpdateHandler(e, friend)}
+          // onClick={()=> {console.log("user.id, friend.id : ", user.id, friend.id); return chatRoomMutation(user.id, friend.id)}}
+          to="/chat" //this should not have link later on because we dont want to change pages, we just want to fetch chatroom data from context and show on the very same page 
           className={`btn red justify-start m-2 w-full gap-3 px-3 normal-case ${currentPath === "/friends" ? "active" : ""
             }`}
         >
           <UsersIcon className="size-5 text-base-content opacity-70" />
-          <span>{friend}</span>
+          <span>{friend?.fullName}</span>
         </Link>
         })}
       </div>
-
-      {/* <Link
-        to="/friends"
-        className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === "/friends" ? "btn-active" : ""
-          }`}
-      >
-        <UsersIcon className="size-5 text-base-content opacity-70" />
-        <span>Find Friends</span>
-      </Link> */}
 
       {/* USER PROFILE SECTION */}
       <div className="p-4 border-t border-base-300 mt-auto">
