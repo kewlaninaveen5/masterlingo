@@ -1,19 +1,12 @@
-import { Link } from "react-router";
 import { LANGUAGE_TO_FLAG } from "../constants";
 import toast from "react-hot-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createVideoCall } from "../lib/api";
-import { useDispatch, useSelector } from "react-redux";
-// import useSocket from "../hooks/useSocket";
 import useAuthUser from "../hooks/useAuthUser";
-import { inCallToTrue } from "../redux/socketIO/socketSlice";
 
 const FriendCard = ({ friend }) => {
   const { authUser } = useAuthUser();
   // const { initiateCall } = useSocket();
-  const socketState = useSelector((state) => state.socketFromStore);
-  const dispatch = useDispatch();
-  // const dispatch = useDispatch();
   const {
     mutate: createVideoCallData,
     isPending,
@@ -72,7 +65,6 @@ const FriendCard = ({ friend }) => {
 
   const initiateVideoCallHandler = async () => {
     toast(`Calling ${friend.fullName} `);
-    console.log("socketState: ", socketState);
     
 
     createVideoCallData({
@@ -106,20 +98,9 @@ const FriendCard = ({ friend }) => {
           </span>
         </div>
 
-        {/* <Link to={`/chat/${friend.id}`} className="btn btn-outline w-full">
-          Message
-        </Link> */}
-        {/* <button
-        onClick={(e) => updateChatBubbles({add: true, event:e, user : friend})}
-        className={`btn btn-outline w-full ${socketState.inCall ? 'btn-disabled' : ''}`}
-        >
-          Message
-        </button> */}
-
-
         <button
           onClick={initiateVideoCallHandler}
-          className={`btn btn-outline w-full ${socketState.inCall ? 'btn-disabled' : ''}`}
+          className={`btn btn-outline w-full`}
         >
           Videocall
         </button>

@@ -5,6 +5,7 @@ import ThemeSelector from "./ThemeSelector";
 import useLogout from "../hooks/useLogout";
 import { StreamChat } from "stream-chat";
 import useStreamChat from "../lib/useStreamChat";
+import { useUser } from "../ReactContext/UserContext/UserProvider";
 const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
 
 const Navbar = () => {
@@ -22,6 +23,7 @@ const Navbar = () => {
 
   const { disconnectChatHandler } = useStreamChat();
   const { logoutMutation } = useLogout();
+  const { user, isLoading } = useUser();
 
   const backButtonHandler = async () => {
     console.log("initiate backButtonHandler");
@@ -85,7 +87,9 @@ const Navbar = () => {
           {/* TODO */}
           <ThemeSelector />
 
-          <div className="avatar">
+          <div className="avatar" 
+          onClick={()=>(console.log("USER DETAILS (FROM USER CONTEXT) : ", user))}
+          >
             <div className="w-9 rounded-full">
               <img
                 src={authUser?.profilePic}

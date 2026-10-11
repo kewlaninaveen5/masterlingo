@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createContext, useContext, useEffect } from "react";
-import { getAuthUser } from "../lib/api";
+import { getAuthUser } from "../../lib/api";
 import { socket } from "./socket";
 
 const SocketContext = createContext(null);
