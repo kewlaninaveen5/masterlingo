@@ -6,9 +6,9 @@ import { useUser } from "../ReactContext/UserContext/UserProvider";
 import { useQuery } from "@tanstack/react-query";
 import { ChatRoom } from "../lib/api";
 import { useChatRoomContext } from "../ReactContext/ChatroomContext/ChatRoomProvider";
-import ChatHeader from "../components/ChatHeader.jsx";
-import RecievedChatBubble from "../components/RecievedMessageBubble.jsx";
-import SentMessageBubble from "../components/SentMessageBubble.jsx";
+import ChatHeader from "../components/Chat/ChatHeader.jsx";
+import RecievedChatBubble from "../components/Chat/RecievedMessageBubble.jsx";
+import SentMessageBubble from "../components/Chat/SentMessageBubble.jsx";
 import ChatTextInput from "../components/Chat/ChatTextInput.jsx";
 
 

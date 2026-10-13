@@ -18,6 +18,7 @@ export const protectRoute = async (req,res,next) => {
         }
 
         req.jwt = sessionJWT
+        req.sessionId = sessionId
         next()
     } catch (error) {
 

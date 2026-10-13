@@ -1,3 +1,4 @@
+import redis from "../lib/redis.js"
 import ChatRoomHelper from "../services/ChatRoomHelper.js"
 import { userHelper } from "../services/userHelper.js"
 import { r200 } from "../utils/responseUtils/responses.js"
@@ -61,19 +62,58 @@ export const attachUserToChatroom = (req,res,next) => {
     next()
 }
 
+export const getCurrentChatroom = async (req,res,next) => {
+    const {sessionId} = req
+    let chatroom = await redis.get(`user:session:${sessionId}:chatroom`)
+    if (!chatroom)
+        console.log("redis isnt returning chatroom")
+    chatroom = JSON.parse(chatroom)
+    console.log("chatroom from redis : ", chatroom)
+    req.chatroom = chatroom
+    next()
+
+}
+
 
 export const attachChatPartnerToChatroom = async (req,res,next) => {
-    const {chatroom } = req
+    const {user, chatroom, sessionId } = req
     const chatPartnerId = chatroom.user1Id === chatroom.user.id ? chatroom.user2Id : chatroom.user1Id
     try {
 
         const chatPartner = await userHelper.getUserFromId(chatPartnerId)
         console.log("chatPartner : ", chatPartner)
         req.chatroom.chatPartner = chatPartner
-        r200(res, chatroom)
+        next()
     } catch (err) {
         console.log("error in attachChatPartnerToChatroom", err)
     }
+
+
+}
+
+export const respondWithChatroomId = async (req,res,next) => {
+
+    const {chatroom, sessionId } = req
+    console.log(chatroom)
+    redis.set(`user:session:${sessionId}:chatroom`, JSON.stringify(chatroom), {EX : 3600 * 24})
+
+    const chatroomForResponse = {
+        id : chatroom.id,
+        chatPartner: {
+            fullName: chatroom.chatPartner.fullName,
+            email: chatroom.chatPartner.email,
+            bio: chatroom.chatPartner.bio,
+            profilePic: chatroom.chatPartner.profilePic,
+            profilePicIdx: chatroom.chatPartner.profilePicIdx,
+            nativeLanguage: chatroom.chatPartner.nativeLanguage,
+            learningLanguage: chatroom.chatPartner.learningLanguage,
+            location: chatroom.chatPartner.location
+          }
+    }
+
+
+
+    r200(res, chatroomForResponse)
 
 
 }
