@@ -7,7 +7,12 @@ import { sendMessageAPI } from "../../lib/ChatApi";
   const { mutate, isPending, error } = useMutation({
     mutationFn: sendMessageAPI,
     onError: () => console.log("error aaya" , error),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["chatRoom"] }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+          queryKey: ["messages", variables.chatroomId],
+      });
+  },
+    // () => queryClient.invalidateQueries({ queryKey: ["chatRoom"] }),
   });
 
   return { isPending, error, sendMessageMutation: mutate };

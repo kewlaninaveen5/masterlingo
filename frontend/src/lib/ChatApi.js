@@ -6,3 +6,16 @@ export const sendMessageAPI = async (chatData) => {
   console.log("response.data : ", response.data)
   return response.data;
 };
+
+export async function getChatMessages(chatroomId) {
+  try {
+      const response = await axiosInstance.get(
+          `/chat/messages/${chatroomId}`
+      );
+
+      return response.data;
+  } catch (error) {
+      console.log("Error in getChatMessages:", error);
+      return null;
+  }
+}

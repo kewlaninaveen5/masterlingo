@@ -14,6 +14,8 @@ const ChatTextInput = () => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault()
+    if (e.target.value.trim() == '')
+      return
     console.log(chatTextInput)
     const formattedToHTMLText = formatTextToHtml(chatTextInput)
     console.log(formattedToHTMLText)
@@ -24,8 +26,8 @@ const ChatTextInput = () => {
           content : formattedToHTMLText,
           chatroomId : chatroom.id
         })
-    // console.log(res)
-    // call a chat sent Mutation. 
+        setChatTextInput('')
+
   }
 
 
