@@ -38,3 +38,42 @@ Thumbs.db
 *.tmp
 
 
+
+
+
+
+
+
+
+
+# Python virtual environments
+services/news-ingestion-service/.venv/
+services/news-ingestion-service/venv/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Test and type-check caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Environment variables and secrets
+services/news-ingestion-service/.env
+services/news-ingestion-service/.env.*
+!services/news-ingestion-service/.env.example
+
+# Build/package artifacts
+build/
+dist/
+*.egg-info/
+
+# Editor / tooling
+.python-version
+
+
+
