@@ -38,21 +38,21 @@ export async function getUserFriends() {
     return null;
   }
 }
+// Moved in the useCharoom hook itself. 
+// export async function ChatRoom(args) {
+//   console.log("Request args:", args);
 
-export async function ChatRoom(args) {
-  console.log("Request args:", args);
+//   try {
+//       const response = await axiosInstance.post("/chat/chatroom", args);
 
-  try {
-      const response = await axiosInstance.post("/chat/chatroom", args);
+//       console.log("Response data:", response.data);
 
-      console.log("Response data:", response.data);
-
-      return response.data;
-  } catch (error) {
-      console.error("ChatRoom API failed:", error);
-      throw error;
-  }
-}
+//       return response.data;
+//   } catch (error) {
+//       console.error("ChatRoom API failed:", error);
+//       throw error;
+//   }
+// }
 
 export async function getRecommendedUsers() {
   const response = await axiosInstance.get("/users");

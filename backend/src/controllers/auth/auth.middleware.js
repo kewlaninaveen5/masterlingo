@@ -82,7 +82,7 @@ export const createJWTToken = (req,res,next) => {
   // console.log("req: ", req)
 
   const {user} = req
-  console.log("USER: ", user)
+  // console.log("USER: ", user)
   const token = jwt.sign(
     { userId: user.id },
     process.env.JWT_SECRET_KEY,
@@ -128,7 +128,6 @@ export const addSessionDataInRedis = async (req,res,next) => {
 
 
 export const sendUser = (req,res,next) => {
-  console.log("req: ", req)
   const {user} = req
   return r201(res, user)
 }

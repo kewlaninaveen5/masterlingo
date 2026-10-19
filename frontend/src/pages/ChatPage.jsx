@@ -4,7 +4,6 @@ import toast from "react-hot-toast";
 import { useUser } from "../ReactContext/UserContext/UserProvider";
 // import useChatRoomContext from "../hooks/useChatRoomContext.js";
 import { useQuery } from "@tanstack/react-query";
-import { ChatRoom } from "../lib/api";
 import { useChatRoomContext } from "../ReactContext/ChatroomContext/ChatRoomProvider";
 import ChatHeader from "../components/Chat/ChatHeader.jsx";
 import RecievedChatBubble from "../components/Chat/RecievedMessageBubble.jsx";

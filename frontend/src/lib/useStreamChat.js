@@ -16,7 +16,6 @@ const useStreamChat = (tokenData, authUser, targetUserId) => {
   const client = StreamChat.getInstance(STREAM_API_KEY);
 
   const disconnectChatHandler = async (callback) => {
-    console.log(chatClientRef);
     console.log("disconnect handler running: ", chatClientRef.current);
     setIsDiconnecting(true);
     setLoading(true);

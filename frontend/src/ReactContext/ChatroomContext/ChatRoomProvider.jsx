@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { createContext, useContext, useEffect } from "react";
-import { ChatRoom, getAuthUser } from "../../lib/api";
 
 const ChatRoomContext = createContext(null);
 

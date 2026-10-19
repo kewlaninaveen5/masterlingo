@@ -1,7 +1,36 @@
 import bcrypt from "bcryptjs"
 import { prisma } from "../lib/prismaClient.js"
+import redis from "../lib/redis.js";
 
 class authHelper {
+
+  static async authenticateSession (sessionId) {
+    if (!sessionId) {
+        return null;
+    }
+
+    const sessionJWT = await redis.get(
+        `user:session:${sessionId}:jwt`
+    );
+
+    if (!sessionJWT) {
+        return null;
+    }
+
+    const userId = await redis.get(
+        `user:session:${sessionId}:userId`
+    );
+
+    if (!userId) {
+        return null;
+    }
+
+    return {
+        sessionId,
+        sessionJWT,
+        userId,
+    };
+};
     
     static async matchPassword(enteredPassword, hashedPassword) {
         console.log(enteredPassword, hashedPassword)

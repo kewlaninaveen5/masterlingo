@@ -32,6 +32,20 @@ class ChatRoomHelper {
         }
     }
 
+    static async findChatRoomById (chatroomId) {
+        try {
+            return await prisma.ChatRoom.findFirst({
+                where : {
+                    id : chatroomId
+                }
+            })
+
+        } catch (err) {
+            console.log("error getting findChatRoomById", err)
+        }
+
+    }
+
 
 
 

@@ -18,6 +18,27 @@ function getOrderedChatroomStrings(str1, str2) {
         } 
 }
 
+
+
+export const verifyChatroomMember = async (chatroomId, userId) => {
+    const chatroom = await ChatRoomHelper.findChatRoomById(chatroomId);
+    // console.log("chatroom from verifyChatroomMember", chatroom)
+
+    if (!chatroom) {
+        return null;
+    }
+
+    const isMember =
+        chatroom.user1Id === userId ||
+        chatroom.user2Id === userId;
+
+    if (!isMember) {
+        return null;
+    }
+
+    return chatroom;
+};
+
 export const createOrAttachChatroom = async (req,res,next) => {
     console.log("HELLOOOOOOOOOOO")
     try {
@@ -29,9 +50,9 @@ export const createOrAttachChatroom = async (req,res,next) => {
 
     const chatroomObject = getOrderedChatroomStrings(userIds[0], userIds[1])
 
-    console.log("chatRoomUniqueIdentifier : ", chatroomObject)
+    // console.log("chatRoomUniqueIdentifier : ", chatroomObject)
     const getChatroomIfExisting = await ChatRoomHelper.findUniqueChatRoom(chatroomObject)
-    console.log(getChatroomIfExisting)
+    // console.log("getChatroomIfExisting", getChatroomIfExisting)
     if (getChatroomIfExisting) {
         req.chatroom = getChatroomIfExisting
         next()
@@ -40,21 +61,20 @@ export const createOrAttachChatroom = async (req,res,next) => {
     }
     console.log("NO existing chatroom")
 
-
-        const chatroom = await ChatRoomHelper.createChatRoom(chatroomObject)
-        
-        if (!chatroom) throw new Error ("unable to create chatroom")
-            req.chatroom = chatroom
-        console.log("chatroom: ", req.chatroom)
-        next()            
-        } catch (err) {
-            console.log("error in createOrAttachChatroom", err)
-        }
+    const chatroom = await ChatRoomHelper.createChatRoom(chatroomObject)
+    
+    if (!chatroom) throw new Error ("unable to create chatroom")
+        req.chatroom = chatroom
+    console.log("chatroom: ", req.chatroom)
+    next()            
+    } catch (err) {
+        console.log("error in createOrAttachChatroom", err)
+    }
 
 }
 
 export const attachUserToChatroom = (req,res,next) => {
-    console.log("REACHED BACHEND WITH REQUEST: ", req)
+    // console.log("REACHED BACHEND WITH REQUEST: ", req)
 
     const {chatroom, user } = req
     chatroom.user = user
@@ -68,7 +88,7 @@ export const getCurrentChatroom = async (req,res,next) => {
     if (!chatroom)
         console.log("redis isnt returning chatroom")
     chatroom = JSON.parse(chatroom)
-    console.log("chatroom from redis : ", chatroom)
+    // console.log("chatroom from redis : ", chatroom)
     req.chatroom = chatroom
     next()
 
@@ -81,7 +101,6 @@ export const attachChatPartnerToChatroom = async (req,res,next) => {
     try {
 
         const chatPartner = await userHelper.getUserFromId(chatPartnerId)
-        console.log("chatPartner : ", chatPartner)
         req.chatroom.chatPartner = chatPartner
         next()
     } catch (err) {
@@ -94,7 +113,6 @@ export const attachChatPartnerToChatroom = async (req,res,next) => {
 export const respondWithChatroomId = async (req,res,next) => {
 
     const {chatroom, sessionId } = req
-    console.log(chatroom)
     redis.set(`user:session:${sessionId}:chatroom`, JSON.stringify(chatroom), {EX : 3600 * 24})
 
     const chatroomForResponse = {

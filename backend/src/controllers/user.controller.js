@@ -15,7 +15,7 @@ export const getRecommendedUsers = async (req, res, next) => {
       },
     });
 
-    console.log("currentUser: ", currentUser)
+    // console.log("currentUser: ", currentUser)
 
 
     const friendIds = currentUser?.friends.map(
@@ -49,7 +49,7 @@ export const getRecommendedUsers = async (req, res, next) => {
 export const getLastSeen = async (friendId) => {
   try {
     const lastSeenDate = await redis.get(`user:${friendId}:lastSeen`)
-    console.log("lastSeenDate: ", lastSeenDate, friendId)
+    // console.log("lastSeenDate: ", lastSeenDate, friendId)
     if (!lastSeenDate) {
       return Date.now() - 30 * 24 * 60 * 60 * 1000 
     }
@@ -83,7 +83,7 @@ export const attachFriends = async (req,res,next) => {
       }
     })
 
-    console.log("USER: ", user)
+    // console.log("USER: ", user)
     const friends = await Promise.all(user.friends.map(async (f)=>{
       f.friend.userId = f.friend.id
       try {
@@ -92,7 +92,7 @@ export const attachFriends = async (req,res,next) => {
         console.log(error)        
       }
       
-      console.log("FRIEND DETAILS: ", f)
+      // console.log("FRIEND DETAILS: ", f)
       return f.friend
     }))
 
@@ -133,7 +133,7 @@ export const getMyFriends = async (req, res, next) => {
       }
     })
 
-    console.log("USER: ", user)
+    // console.log("USER: ", user)
     const friends = await Promise.all(user.friends.map(async (f)=>{
       f.friend.userId = f.friend.id
       try {
@@ -142,7 +142,7 @@ export const getMyFriends = async (req, res, next) => {
         console.log(error)        
       }
       
-      console.log("FRIEND DETAILS: ", f)
+      // console.log("FRIEND DETAILS: ", f)
       return f.friend
     }))
 

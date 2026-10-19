@@ -18,6 +18,7 @@ import CustomVideoCall from "./pages/CustomVideoCall.jsx";
 import GlobalIncomingCallListener from "./components/GlobalIncomingCallListener.jsx";
 import FriendsPage from "./pages/FriendsPage.jsx";
 import GptHomePage from "./pages/GptHomePage.jsx";
+import { ChatPageCopy } from "./pages/ChatPageCopy.jsx";
 
 const App = () => {
   const { isLoading, authUser } = useAuthUser();
@@ -134,7 +135,7 @@ const App = () => {
           element={
             isAuthenticated && isOnboarded ? (
               <Layout >
-                <ChatPage />
+                <ChatPageCopy />
               </Layout>
             ) : (
               <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />

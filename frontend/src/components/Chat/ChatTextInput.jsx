@@ -3,29 +3,40 @@ import { formatTextToHtml } from '../../Utils/MessageUtils.js'
 import { sendMessageAPI } from '../../lib/ChatApi.js'
 import { useChatRoomContext } from '../../ReactContext/ChatroomContext/ChatRoomProvider.jsx'
 import useSendMessage from '../../hooks/ChatHooks/useSendMessage.js'
+import { useUser } from '../../ReactContext/UserContext/UserProvider.jsx'
+import { useSocket } from '../../ReactContext/socket/SocketProvider.jsx'
 
 const ChatTextInput = () => {
   const [chatTextInput, setChatTextInput] = useState('')
 
   const { isPending, error, sendMessageMutation } = useSendMessage();
+  const user = useUser()
+  const socket = useSocket()
 
 
   const {chatroom} = useChatRoomContext()
 
   const onSubmitHandler = async (e) => {
     e.preventDefault()
-    if (e.target.value.trim() == '')
+    console.log(e.target)
+    if (e?.target?.value?.trim() == '')
       return
     console.log(chatTextInput)
     const formattedToHTMLText = formatTextToHtml(chatTextInput)
     console.log(formattedToHTMLText)
     console.log(chatroom)
 
-      sendMessageMutation(
-        {
-          content : formattedToHTMLText,
-          chatroomId : chatroom.id
-        })
+      // sendMessageMutation(
+      //   {
+      //     content : formattedToHTMLText,
+      //     chatroomId : chatroom.id
+      //   })
+
+        socket.emit("message:send", {
+          chatroomId : chatroom.id,
+          content: formattedToHTMLText,
+      });
+        
         setChatTextInput('')
 
   }
@@ -34,7 +45,7 @@ const ChatTextInput = () => {
 
 
   return (
-    <div >
+    <div class = "sticky bottom-0 z-20" >
       <form class="inline-form w-full" onSubmit={(e) => onSubmitHandler(e)}>
         <div class="p-4 bg-base-200 border-t border-base-300 flex items-center gap-2 sticky bottom-0">
 

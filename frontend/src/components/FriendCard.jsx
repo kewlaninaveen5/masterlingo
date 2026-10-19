@@ -98,12 +98,12 @@ const FriendCard = ({ friend }) => {
           </span>
         </div>
 
-        <button
+        {/* <button
           onClick={initiateVideoCallHandler}
           className={`btn btn-outline w-full`}
         >
           Videocall
-        </button>
+        </button> */}
       </div>
     </div>
   );

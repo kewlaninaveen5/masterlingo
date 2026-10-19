@@ -4,13 +4,14 @@ import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.route.js";
 import chatRoutes from "./routes/chat.route.js";
 import videocallRoutes from "./routes/videocall.route.js";
-import { connectDB } from "./lib/db.js";
+// import { connectDB } from "./lib/db.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import http from "http";
 import path from 'path';
-import { initSocket } from "./lib/sockets.js";
+// import { initSocket } from "./lib/sockets.js";
 import { connectRedis } from "./lib/redis.js";
+import { initSocket } from "./sockets/socket.server.js";
 
 dotenv.config();
 const app = express();
@@ -19,7 +20,7 @@ const PORT = process.env.PORT;
 
 const __dirname = path.resolve();
 initSocket(server);
-
+console.log("socket initiation should have happened just above")
 await connectRedis();
 
 app.use(
@@ -31,6 +32,7 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
+
 app.use("/api/auth", authRoutes); //migration to prisma complete
 app.use("/api/users", userRoutes); //migration to prisma complete
 app.use("/api/friends", userRoutes); //migration to prisma complete
@@ -49,5 +51,5 @@ if (process.env.NODE_ENV === 'production') {
 
 server.listen(PORT, () => {
   console.log(`server running on port ${PORT}`);
-  connectDB(); 
+  // connectDB(); 
 });

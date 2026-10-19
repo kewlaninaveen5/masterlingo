@@ -9,17 +9,20 @@ export const protectRoute = async (req,res,next) => {
     try {
 
         const sessionId = req.cookies.sessionId
-        console.log("sessionId: ", sessionId)
-        const sessionJWT = await redis.get(`user:session:${sessionId}:jwt`)
 
-        if (!sessionJWT) {
-            console.log("unable to login becasue sessionId not in redis ")
-            return r400(res, "session logged out, please login again")
+        const session = await authHelper.authenticateSession(sessionId)
+
+        if (!session) {
+            return r400(
+                res,
+                "session logged out, please login again"
+            );
         }
+        req.sessionId = session.sessionId;
+        req.jwt = session.sessionJWT;
+        req.userId = session.userId;
 
-        req.jwt = sessionJWT
-        req.sessionId = sessionId
-        next()
+        next();
     } catch (error) {
 
         console.log("Error in protectRoute middleware", error)

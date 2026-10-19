@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router";
 import useAuthUser from "../hooks/useAuthUser";
-import { BellIcon, Bot, LogOutIcon } from "lucide-react";
+import { BellIcon, Bot, LogOutIcon, UsersIcon } from "lucide-react";
 import ThemeSelector from "./ThemeSelector";
 import useLogout from "../hooks/useLogout";
 import { StreamChat } from "stream-chat";
@@ -34,11 +34,14 @@ const Navbar = () => {
     navigate(-1);
   };
 
-  const navigationHandler = async(address) => {
+  const navigationHandler = async (address) => {
     if (isChatPage) {
-      await disconnectChatHandler(()=>navigate(address));
+      await disconnectChatHandler(() => navigate(address));
     } else navigate(address);
   };
+
+  const currentPath = location.pathname;
+
 
   return (
     <nav className="bg-base-200 border-b border-base-300 sticky top-0 z-30 h-16 flex items-center">
@@ -46,20 +49,28 @@ const Navbar = () => {
         <div className="flex items-center justify-end w-full">
           {/* LOGO - ONLY IN THE CHAT PAGE */}
           {!isHomepage ? (
-            <div className="">
+            <div className="flex flex-row gap-5">
               <button
                 onClick={() => navigationHandler(-1)}
-                className="flex items-center gap-2.5"
+                className="flex items-center gap-2.5 p-right-2"
               >
                 {/* <ChevronLeft /> */}
                 <Bot className="size-9 text-primary" />
                 <span className="hidden lg:inline text-3xl font-bold font-mono bg-clip-text bg-gradient-to-r from-primary to-secondary tracking-wider">
-                Home
+                  Home
                 </span>
               </button>
+              <Link
+                to="/friends"
+                className={`btn btn-ghost justify-start gap-3 px-3 normal-case ${currentPath === "/friends" ? "btn-active" : ""
+                  }`}
+              >
+                <UsersIcon className="size-5 text-base-content opacity-70" />
+                <span>Find</span>
+              </Link>
             </div>
           ) : (
-            <div className="">
+            <div className="flex flex-row gap-5">
               <button
                 onClick={() => navigationHandler("/")}
                 className="flex items-center gap-2.5"
@@ -70,6 +81,14 @@ const Navbar = () => {
                   Home
                 </span>
               </button>
+              <Link
+                to="/friends"
+                className={`btn btn-ghost justify-start gap-3 px-3 normal-case ${currentPath === "/friends" ? "btn-active" : ""
+                  }`}
+              >
+                <UsersIcon className="size-5 text-base-content opacity-70" />
+                <span>Find</span>
+              </Link>
             </div>
           )}
 
@@ -79,7 +98,7 @@ const Navbar = () => {
               to={"/notifications"}
             >
               {/* <button className="btn btn-ghost btn-circle"> */}
-                <BellIcon className="h-6 w-6 text-base-content opacity-70" />
+              <BellIcon className="h-6 w-6 text-base-content opacity-70" />
               {/* </button> */}
             </button>
           </div>
@@ -87,8 +106,8 @@ const Navbar = () => {
           {/* TODO */}
           <ThemeSelector />
 
-          <div className="avatar" 
-          onClick={()=>(console.log("USER DETAILS (FROM USER CONTEXT) : ", user))}
+          <div className="avatar"
+            onClick={() => (console.log("USER DETAILS (FROM USER CONTEXT) : ", user))}
           >
             <div className="w-9 rounded-full">
               <img

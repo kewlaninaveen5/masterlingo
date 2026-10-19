@@ -7,6 +7,7 @@ import { getUserFriends } from "../lib/api.js";
 import { useQuery } from "@tanstack/react-query";
 import useChatRoom from "../hooks/useChatroom.js";
 import { useUser } from "../ReactContext/UserContext/UserProvider.jsx";
+import { socket } from "../ReactContext/socket/socket.js";
 
 const Sidebar = () => {
   const { authUser } = useAuthUser();
@@ -19,11 +20,16 @@ const Sidebar = () => {
 
   const { isPending, error, chatRoomMutation } = useChatRoom();
 
-  const chatRoomUpdateHandler =  (e, friend) => {
+  const chatRoomClickedHandler =  (e, friend) => {
     e.preventDefault()
     console.log(user, friend)
-    !isLoading && friend ? chatRoomMutation([user.id,friend.id]) : null
-    navigate("/chat")
+    !isLoading && friend ? chatRoomMutation([user.id,friend.id], {
+      onSuccess: (chatroom) => {
+        console.log("chatroom from onSuccess: ", chatroom)
+          socket.emit("chat:join", chatroom.id);
+          navigate("/chat");
+      },
+  } ) : null
   }
 
 
@@ -65,9 +71,9 @@ const Sidebar = () => {
           return <Link
           key = {idx}
 
-          onClick={(e)=> chatRoomUpdateHandler(e, friend)}
+          onClick={(e)=> chatRoomClickedHandler(e, friend)}
           // onClick={()=> {console.log("user.id, friend.id : ", user.id, friend.id); return chatRoomMutation(user.id, friend.id)}}
-          to="/chat" //this should not have link later on because we dont want to change pages, we just want to fetch chatroom data from context and show on the very same page 
+          // to="/chat" //this should not have link later on because we dont want to change pages, we just want to fetch chatroom data from context and show on the very same page 
           className={`btn red justify-start m-2 w-full gap-3 px-3 normal-case ${currentPath === "/friends" ? "active" : ""
             }`}
         >

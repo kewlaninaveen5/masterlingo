@@ -2,7 +2,7 @@ import React from 'react'
 
 const ChatHeader = ({chatPartner}) => {
   return (
-    <div class="navbar bg-base-200 border-b border-base-300 px-4 flex justify-between items-center sticky top-0 z-10">
+    <div class="sticky top-0 z-20 navbar bg-base-200 border-b border-base-300 px-4 flex justify-between items-center sticky top-0 z-10">
           <div class="flex items-center gap-3">
             <div class="avatar online">
               <div class="w-10 rounded-full">

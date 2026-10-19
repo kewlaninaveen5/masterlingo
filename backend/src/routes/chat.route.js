@@ -5,7 +5,7 @@ import { getChatMessages, processSentMessage } from "../middleware/chat.message.
 
 const router = express.Router();
 
-router.post("/chatroom", protectRoute, attachUser, createOrAttachChatroom,  attachUserToChatroom, attachChatPartnerToChatroom , respondWithChatroomId )
+router.post("/join/chatroom", protectRoute, attachUser, createOrAttachChatroom,  attachUserToChatroom, attachChatPartnerToChatroom , respondWithChatroomId )
 
 router.post("/message/send",protectRoute, getCurrentChatroom, processSentMessage)
 router.get("/messages/:chatroomId", protectRoute, attachUser, getCurrentChatroom, getChatMessages )

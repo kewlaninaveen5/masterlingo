@@ -14,7 +14,7 @@ const Layout = ({ children, showSidebar = true }) => {
         <div className="flex-1 flex flex-col">
           <Navbar />
 
-          <main className="flex-1 overflow-y-auto" data-theme={theme} >{children}</main>
+          <main className="h-[calc(100vh-64px)] overflow-hidden" data-theme={theme} >{children}</main>
         </div>
         {/* {console.log("openChatBubbles : ", openChatBubbles)}
         {openChatBubbles && openChatBubbles.map((user, i) => (<ChatBubble user={user}  />))} */}

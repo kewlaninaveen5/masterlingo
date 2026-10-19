@@ -1,5 +1,22 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ChatRoom } from "../lib/api";
+import { axiosInstance } from "../lib/axios.js";
+
+
+
+async function ChatRoom(args) {
+  console.log("Request args:", args);
+
+  try {
+      const response = await axiosInstance.post("/chat/join/chatroom", args);
+
+      console.log("Response data:", response.data);
+
+      return response.data;
+  } catch (error) {
+      console.error("ChatRoom API failed:", error);
+      throw error;
+  }
+}
 
 const useChatRoom = () => {
   const queryClient = useQueryClient();
@@ -15,6 +32,9 @@ const useChatRoom = () => {
   
     return { error, isPending, chatRoomMutation: mutate };
   };
+
+
 export default useChatRoom;
+
 
 
