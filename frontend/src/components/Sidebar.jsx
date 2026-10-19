@@ -40,33 +40,26 @@ const Sidebar = () => {
   });
 
   const currentPath = location.pathname;
+  console.log("currentPath : ", currentPath)
 
   return (
     <aside className="w-1/4 min-w-[200px] bg-base-200 border-r border-base-300  lg:flex flex-col h-screen sticky top-0" data-theme={theme}>
       <div className="p-5 border-b border-base-300 flex m-auto mt-0 mb-0 flex-row w-full justify-between ">
         <Link to="/" className="flex items-center gap-2.5">
-          <ShipWheelIcon className="size-9 text-primary" />
+          {/* <ShipWheelIcon className="size-9 text-primary" /> */}
           <span className="text-3xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary  tracking-wider">
             Masterlingo
           </span>
         </Link>
-        <Link
-        to="/friends"
-        className={`btn btn-ghost justify-start gap-3 px-3 normal-case ${currentPath === "/friends" ? "btn-active" : ""
-          }`}
-      >
-        <UsersIcon className="size-5 text-base-content opacity-70" />
-        <span>Find</span>
-      </Link>
       </div>
 
       <div aria-label="friends-list" className="p-2 border-b border-base-300">
-        <SearchBox />
+        {!currentPath.includes("chat") ? null : <SearchBox />}
         {
-          loadingFriends ? null : console.log("friends: ", friends)
+          !currentPath.includes("chat") ? null : loadingFriends ? null : console.log("friends: ", friends)
         }
 
-        {loadingFriends ? null : friends.map((friend, idx)=>{
+        {!currentPath.includes("chat") ? null : loadingFriends ? null : friends.map((friend, idx)=>{
 
           return <Link
           key = {idx}

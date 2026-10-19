@@ -19,6 +19,7 @@ import GlobalIncomingCallListener from "./components/GlobalIncomingCallListener.
 import FriendsPage from "./pages/FriendsPage.jsx";
 import GptHomePage from "./pages/GptHomePage.jsx";
 import { ChatPageCopy } from "./pages/ChatPageCopy.jsx";
+import ToastViewport from "./components/Toast/ToastViewport.jsx";
 
 const App = () => {
   const { isLoading, authUser } = useAuthUser();
@@ -158,8 +159,7 @@ const App = () => {
           }
         />
       </Routes>
-
-      <Toaster />
+      <ToastViewport />
     </div>
   );
 };

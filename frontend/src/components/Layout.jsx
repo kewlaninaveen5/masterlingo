@@ -1,6 +1,7 @@
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import { useThemeStore } from "../store/useThemeStore";
+import MiniSidebar from "./MiniSidebar/MiniSidebar";
 
 const Layout = ({ children, showSidebar = true }) => {
 
@@ -9,6 +10,7 @@ const Layout = ({ children, showSidebar = true }) => {
   return (
     <div className="min-h-screen">
       <div className="flex">
+      <MiniSidebar />
         {showSidebar && <Sidebar />}
 
         <div className="flex-1 flex flex-col">

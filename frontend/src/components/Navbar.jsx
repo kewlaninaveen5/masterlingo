@@ -51,7 +51,7 @@ const Navbar = () => {
           {!isHomepage ? (
             <div className="flex flex-row gap-5">
               <button
-                onClick={() => navigationHandler(-1)}
+                onClick={() => navigate("/")}
                 className="flex items-center gap-2.5 p-right-2"
               >
                 {/* <ChevronLeft /> */}
@@ -60,19 +60,11 @@ const Navbar = () => {
                   Home
                 </span>
               </button>
-              <Link
-                to="/friends"
-                className={`btn btn-ghost justify-start gap-3 px-3 normal-case ${currentPath === "/friends" ? "btn-active" : ""
-                  }`}
-              >
-                <UsersIcon className="size-5 text-base-content opacity-70" />
-                <span>Find</span>
-              </Link>
             </div>
           ) : (
             <div className="flex flex-row gap-5">
               <button
-                onClick={() => navigationHandler("/")}
+                onClick={() => navigate("/")}
                 className="flex items-center gap-2.5"
               >
                 {/* <ChevronLeft /> */}
@@ -81,14 +73,6 @@ const Navbar = () => {
                   Home
                 </span>
               </button>
-              <Link
-                to="/friends"
-                className={`btn btn-ghost justify-start gap-3 px-3 normal-case ${currentPath === "/friends" ? "btn-active" : ""
-                  }`}
-              >
-                <UsersIcon className="size-5 text-base-content opacity-70" />
-                <span>Find</span>
-              </Link>
             </div>
           )}
 

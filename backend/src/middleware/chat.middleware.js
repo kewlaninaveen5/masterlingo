@@ -1,3 +1,4 @@
+import { getLastSeen } from "../controllers/user.controller.js"
 import redis from "../lib/redis.js"
 import ChatRoomHelper from "../services/ChatRoomHelper.js"
 import { userHelper } from "../services/userHelper.js"
@@ -101,6 +102,7 @@ export const attachChatPartnerToChatroom = async (req,res,next) => {
     try {
 
         const chatPartner = await userHelper.getUserFromId(chatPartnerId)
+        chatPartner.lastSeen = await getLastSeen(chatPartnerId)
         req.chatroom.chatPartner = chatPartner
         next()
     } catch (err) {
@@ -120,6 +122,7 @@ export const respondWithChatroomId = async (req,res,next) => {
         chatPartner: {
             fullName: chatroom.chatPartner.fullName,
             email: chatroom.chatPartner.email,
+            lastSeen: chatroom.chatPartner.lastSeen,
             bio: chatroom.chatPartner.bio,
             profilePic: chatroom.chatPartner.profilePic,
             profilePicIdx: chatroom.chatPartner.profilePicIdx,

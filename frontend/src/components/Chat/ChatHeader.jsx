@@ -1,6 +1,9 @@
 import React from 'react'
+import { formatLastSeen } from '../../Utils/userUtils'
 
 const ChatHeader = ({chatPartner}) => {
+  console.log("chatPartner : ", chatPartner)
+
   return (
     <div class="sticky top-0 z-20 navbar bg-base-200 border-b border-base-300 px-4 flex justify-between items-center sticky top-0 z-10">
           <div class="flex items-center gap-3">
@@ -11,7 +14,7 @@ const ChatHeader = ({chatPartner}) => {
             </div>
             <div>
               <h2 class="font-bold text-sm">{chatPartner.fullName}</h2>
-              <p class="text-xs text-success">Still Building</p>
+              <p class="text-xs text-success">last seen {formatLastSeen(chatPartner.lastSeen)}</p>
             </div>
           </div>
 

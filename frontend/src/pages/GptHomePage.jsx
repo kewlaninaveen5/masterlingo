@@ -13,8 +13,8 @@ import { capitialize } from "../lib/utils";
 
 import FriendCard, { getLanguageFlag } from "../components/FriendCard";
 import NoFriendsFound from "../components/NoFriendsFound";
-import toast from "react-hot-toast";
 import { GptChatbox } from "../components/GptChatbox";
+import { toast } from "../lib/toast";
 
 const GptHomePage = () => {
   const queryClient = useQueryClient();
@@ -71,6 +71,16 @@ const GptHomePage = () => {
         </div>
 
         <div>
+        <button
+        onClick={() =>
+        toast({
+          title: "Welcome to Masterlingo",
+          content: "Explore the application and its engineering.",
+        })
+      }
+    >
+      Test toast
+    </button>
           <GptChatbox/>
         </div>
 

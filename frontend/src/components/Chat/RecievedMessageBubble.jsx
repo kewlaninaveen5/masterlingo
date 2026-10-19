@@ -13,7 +13,7 @@ const RecievedMessageBubble = ({chatPartner, content}) => {
             </div>
             <div class="chat-bubble chat-bubble-secondary" dangerouslySetInnerHTML={{ __html: content?.content }} /> 
             <div class="chat-footer opacity-50 text-xs mt-1">
-                12:45 PM STILL BUILDING
+
             </div>
         </div>
     )

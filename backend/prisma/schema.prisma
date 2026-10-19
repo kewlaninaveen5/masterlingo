@@ -75,6 +75,7 @@ model VideoCallMember {
 
 model Message {
   id         String        @id @default(cuid())
+  chatRoomUniqueIdentifier String
   chatroomId String
   senderId   String
   receiverId String
@@ -86,6 +87,7 @@ model Message {
   sender     User          @relation("SentMessages", fields: [senderId], references: [id])
 
   @@index([chatroomId])
+   @@index([chatRoomUniqueIdentifier, createdAt])
 }
 
 model ChatRoom {

@@ -9,7 +9,6 @@ const SentMessageBubble = ({content}) => {
             </div>
             <div class="chat-bubble chat-bubble-primary" dangerouslySetInnerHTML={{ __html: content?.content }} /> 
             <div class="chat-footer opacity-50 text-xs mt-1">
-              12:47 PM ·   STILL BUILDING<span class="text-primary">Delivered  STILL BUILDING</span>
             </div>
           </div>
     )
