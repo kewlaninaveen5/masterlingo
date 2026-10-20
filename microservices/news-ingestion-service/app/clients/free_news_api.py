@@ -8,6 +8,7 @@ from app.enums.language import Language
 from app.models.news import NewsArticle
 
 
+
 class FreeNewsArticleResponse(BaseModel):
     """The external provider's article response."""
 

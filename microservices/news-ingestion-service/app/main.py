@@ -5,6 +5,9 @@ from fastapi import FastAPI, HTTPException
 
 from app.clients.free_news_api import FreeNewsClient
 
+from app.clients.kafka_publisher import create_producer, publish_article
+
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -34,6 +37,12 @@ async def test_news():
         articles = await app.state.news_client.fetch_recent_articles(
             limit=5
         )
+        producer = create_producer()
+        for article in articles:
+            publish_article(
+                producer,
+                article.model_dump(mode="json"),
+            )
         return {
             "count": len(articles),
             "articles": [
@@ -46,3 +55,6 @@ async def test_news():
             status_code=502,
             detail=f"News provider request failed: {type(exc).__name__}",
         ) from exc
+    finally:
+        producer.flush()
+        producer.close()
