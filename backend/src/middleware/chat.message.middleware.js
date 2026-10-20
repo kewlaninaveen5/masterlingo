@@ -4,6 +4,7 @@ import { r200, r500 } from "../utils/responseUtils/responses.js";
 export const processSentMessage = async (req, res, next) => {
     const { user, chatroom, body } = req;
 
+
     try {
         const message = await prisma.message.create({
             data: {
@@ -26,7 +27,7 @@ export const processSentMessage = async (req, res, next) => {
             message: "Failed to send message",
         });
     }
-};
+}; 
 
 export const getChatMessages = async (req, res, next) => {
     try {
