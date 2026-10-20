@@ -13,7 +13,7 @@ export const processSentMessage = async (req, res, next) => {
                 receiverId: chatroom.chatPartner.id,
                 content: body.content,
             },
-        });
+        });    
 
         console.log("[processSentMessage -> message]", message);
 
