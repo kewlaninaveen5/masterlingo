@@ -55,7 +55,7 @@ const ChatTextInput = () => {
 
           <textarea
           id="chat-message"
-          name="chatMessage" 
+          name="chatMessage"
           placeholder="Type a message..." 
           onChange={(e) => {
             e.target.style.height = "auto";
