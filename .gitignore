@@ -47,8 +47,8 @@ Thumbs.db
 
 
 # Python virtual environments
-microservices/news-ingestion-service/.venv/
-microservices/news-ingestion-service/venv/
+microservices/news-ingestion-service-python-deprioritized/.venv/
+microservices/news-ingestion-service-python-deprioritized/venv/
 
 # Python cache and compiled files
 __pycache__/
@@ -63,9 +63,9 @@ __pycache__/
 htmlcov/
 
 # Environment variables and secrets
-microservices/news-ingestion-service/.env
-microservices/news-ingestion-service/.env.*
-!microservices/news-ingestion-service/.env.example
+microservices/news-ingestion-service-python-deprioritized/.env
+microservices/news-ingestion-service-python-deprioritized/.env.*
+!microservices/news-ingestion-service-python-deprioritized/.env.example
 
 # Build/package artifacts
 build/
