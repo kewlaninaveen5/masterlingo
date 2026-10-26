@@ -95,6 +95,7 @@ model ChatRoom {
   user1Id  String
   chatRoomUniqueIdentifier String @unique
   user2Id  String
+  users String[]
   messages Message[]
 
   @@unique([user1Id, user2Id])
