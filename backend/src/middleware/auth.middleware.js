@@ -48,15 +48,6 @@ export const protectRoute = async (req,res,next) => {
         }
         const user = await authHelper.getUser(decoded.userId)
         
-        // await prisma.user.findUnique({
-        //     where: {
-        //         id : decoded.userId
-        //     },
-        //     omit : {
-        //         password: true
-        //     } 
-        // })
-
         if (!user) {
             console.log("User not found")
             return res.status(401).json({message: "Unauthorized - User not found"})
